@@ -9,10 +9,11 @@
 </head>
 <body>
     <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
-    <a-scene mindar-image="imageTargetSrc: mind/Object1.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <!-- 定義場景中使用的資產 -->
         <a-assets>
             <img id="projection" src="images/Projection1.png" />
+            <a-asset-item id="kinokoModel" src="model/Kinoko.glb"></a-asset-item>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -20,8 +21,10 @@
 
         <!-- 定義圖像目標並添加 3D 物體和圖像 -->
         <a-entity mindar-image-target="targetIndex: 0">
-            <!--<a-box position="0 0.5 0" material="color: red;"></a-box> -->  <!-- 紅色方塊 -->
             <a-image src="#projection" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 1">
+            <a-gltf-model src="#kinokoModel" position="0 0 0" scale="1 1 1" rotation="0 0 0"></a-gltf-model>
         </a-entity>
     </a-scene>
 </body>
