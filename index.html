@@ -27,6 +27,7 @@
         <a-assets>
             <img id="projection" src="images/Projection1.png" />
             <a-asset-item id="kinokoModel" src="model/Kinoko.gltf"></a-asset-item>
+            <a-asset-item id="LucaModel" src="model/luca.gltf"></a-asset-item>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -38,6 +39,9 @@
         </a-entity>
         <a-entity mindar-image-target="targetIndex: 1">
             <a-image src="#projection" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 2">
+            <a-gltf-model src="#LucaModel" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
         </a-entity>
     </a-scene>
 
