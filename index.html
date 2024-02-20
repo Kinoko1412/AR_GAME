@@ -59,7 +59,7 @@
             <a-asset-item id="PetraModel" src="model/Petra.gltf"></a-asset-item>
             <a-asset-item id="AugustusModel" src="model/lucubs.gltf"></a-asset-item>
             <a-asset-item id="VentiModel" src="model/venti.gltf"></a-asset-item>
-            <img id="firstFrame" src="lucadance/0.png">
+            <video id="lucadance" src="video/lucadance.mp4" autoplay loop muted playsinline></video>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -84,8 +84,8 @@
         <a-entity mindar-image-target="targetIndex: 5">
             <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
         </a-entity>
-        <a-entity mindar-image-target="targetIndex: 6" mindar-image-target-found="startAnimation()" >
-            <a-image id="animatedImage" src="#firstFrame" position="0 0 0" scale="1 1 1"></a-image>
+        <a-entity mindar-image-target="targetIndex: 6">
+            <a-video src="#lucadance" width="2" height="1" position="0 0 0" rotation="0 0 0"></a-video>
         </a-entity>
     </a-scene>
 
