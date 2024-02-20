@@ -7,35 +7,13 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script>
-        var animationInterval;
-    
-        function startAnimation() {
-            var currentIndex = 0;
-            var totalFrames = 22;
-            var frameRate = 100; // milliseconds per frame
-    
-            function updateFrame() {
-                var imgSrc = 'lucadance/' + currentIndex + '.png';
-                var imgElement = document.querySelector('#animatedImage');
-                imgElement.setAttribute('src', imgSrc);
-    
-                currentIndex++;
-                if (currentIndex > totalFrames) {
-                    currentIndex = 0;
-                }
-            }
-    
-            animationInterval = setInterval(updateFrame, frameRate);
-        }
-    
-        function stopAnimation() {
-            clearInterval(animationInterval);
-            var imgElement = document.querySelector('#animatedImage');
-            imgElement.setAttribute('src', 'lucadance/0.png'); // Reset to the first frame
+        function playVideo() {
+            var videoElement = document.querySelector('#lucadance');
+            videoElement.play();
         }
     </script>
     <style>
-        .funny-face-btn {
+        .funny-face-btn, .play-video-btn {
             position: fixed;
             left: 10px;
             bottom: 10px;
@@ -45,6 +23,10 @@
             border-radius: 5px;
             cursor: pointer;
             z-index: 1000;
+        }
+
+        .play-video-btn {
+            bottom: 50px;
         }
     </style>
 </head>
@@ -85,11 +67,12 @@
             <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
         </a-entity>
         <a-entity mindar-image-target="targetIndex: 6">
-            <a-video src="#lucadance" width="2" height="1" position="0 0 0" rotation="0 0 0"></a-video>
+            <a-video src="#lucadance" width="2" height="5.5" position="0 0 0" rotation="0 0 0"></a-video>
         </a-entity>
     </a-scene>
 
     <!-- 添加 "funny face" 按鈕 -->
     <button class="funny-face-btn" onclick="window.location.href='https://kinoko1412.github.io/AR_GAME/test/test.html'">Funny Face</button>
+    <button class="play-video-btn" onclick="playVideo()">Play Video</button>
 </body>
 </html>
