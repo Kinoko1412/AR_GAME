@@ -28,6 +28,8 @@
             <img id="projection" src="images/Projection1.png" />
             <a-asset-item id="kinokoModel" src="model/Kinoko.gltf"></a-asset-item>
             <a-asset-item id="LucaModel" src="model/luca.gltf"></a-asset-item>
+            <a-asset-item id="PetraModel" src="model/luca.gltf"></a-asset-item>
+            <a-asset-item id="AugustusModel" src="model/lucubs.gltf"></a-asset-item>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -42,6 +44,12 @@
         </a-entity>
         <a-entity mindar-image-target="targetIndex: 2">
             <a-gltf-model src="#LucaModel" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 3">
+            <a-gltf-model src="#PetraModel" position="0 0 0" scale="0.5 0.5 0.5" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 4">
+            <a-gltf-model src="#AugustusModel" position="0 0 0" scale="0.5 0.5 0.5" rotation="90 0 0"></a-gltf-model>
         </a-entity>
     </a-scene>
 
