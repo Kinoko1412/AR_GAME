@@ -31,6 +31,7 @@
             <a-asset-item id="PetraModel" src="model/Petra.gltf"></a-asset-item>
             <a-asset-item id="AugustusModel" src="model/lucubs.gltf"></a-asset-item>
             <a-asset-item id="VentiModel" src="model/venti.gltf"></a-asset-item>
+            <a-asset-item id="lucadance" src="gif/lucadance.gif"></a-asset-item>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -54,6 +55,9 @@
         </a-entity>
         <a-entity mindar-image-target="targetIndex: 5">
             <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 6">
+            <a-plane material="shader: gif; src: #lucadance" position="0 0 0" scale="1 1 1" rotation="0 0 0"></a-plane>
         </a-entity>
     </a-scene>
 
