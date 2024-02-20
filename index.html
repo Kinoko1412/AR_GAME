@@ -6,6 +6,18 @@
     <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+        .funny-face-btn {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
@@ -21,11 +33,14 @@
 
         <!-- 定義圖像目標並添加 3D 物體和圖像 -->
         <a-entity mindar-image-target="targetIndex: 0">
-            <a-gltf-model src="#kinokoModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="0 0 0"></a-gltf-model>
+            <a-gltf-model src="#kinokoModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="0 90 0"></a-gltf-model>
         </a-entity>
         <a-entity mindar-image-target="targetIndex: 1">
             <a-image src="#projection" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
         </a-entity>
     </a-scene>
+
+    <!-- 添加 "funny face" 按鈕 -->
+    <button class="funny-face-btn" onclick="window.location.href='https://kinoko1412.github.io/AR_GAME/test/test.html'">Funny Face</button>
 </body>
 </html>
