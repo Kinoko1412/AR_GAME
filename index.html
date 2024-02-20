@@ -6,7 +6,34 @@
     <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
+    <script>
+        var animationInterval;
+    
+        function startAnimation() {
+            var currentIndex = 0;
+            var totalFrames = 22;
+            var frameRate = 100; // milliseconds per frame
+    
+            function updateFrame() {
+                var imgSrc = 'lucadance/' + currentIndex + '.png';
+                var imgElement = document.querySelector('#animatedImage');
+                imgElement.setAttribute('src', imgSrc);
+    
+                currentIndex++;
+                if (currentIndex > totalFrames) {
+                    currentIndex = 0;
+                }
+            }
+    
+            animationInterval = setInterval(updateFrame, frameRate);
+        }
+    
+        function stopAnimation() {
+            clearInterval(animationInterval);
+            var imgElement = document.querySelector('#animatedImage');
+            imgElement.setAttribute('src', 'lucadance/0.png'); // Reset to the first frame
+        }
+    </script>
     <style>
         .funny-face-btn {
             position: fixed;
@@ -32,7 +59,7 @@
             <a-asset-item id="PetraModel" src="model/Petra.gltf"></a-asset-item>
             <a-asset-item id="AugustusModel" src="model/lucubs.gltf"></a-asset-item>
             <a-asset-item id="VentiModel" src="model/venti.gltf"></a-asset-item>
-            <video id="lucadance" src="video/lucadance.mp4" autoplay loop muted playsinline></video>
+            <img id="firstFrame" src="lucadance/1.png">
         </a-assets>
 
         <!-- 設定相機 -->
@@ -57,8 +84,8 @@
         <a-entity mindar-image-target="targetIndex: 5">
             <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
         </a-entity>
-        <a-entity mindar-image-target="targetIndex: 6">
-            <a-video src="#lucadance" width="2" height="6" position="0 0 0" rotation="0 0 0"></a-video>
+        <a-entity mindar-image-target="targetIndex: 6" mindar-image-target-found="startAnimation()" mindar-image-target-lost="stopAnimation()">
+            <a-image id="animatedImage" src="#firstFrame" position="0 0 0" scale="1 1 1"></a-image>
         </a-entity>
     </a-scene>
 
