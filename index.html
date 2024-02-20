@@ -34,7 +34,7 @@
             <a-asset-item id="PetraModel" src="model/Petra.gltf"></a-asset-item>
             <a-asset-item id="AugustusModel" src="model/lucubs.gltf"></a-asset-item>
             <a-asset-item id="VentiModel" src="model/venti.gltf"></a-asset-item>
-            <img id="lucadance" src="gif/lucadance.gif">
+            <img id="lucadance" src="gif/lucadance.gif" />
         </a-assets>
 
         <!-- 設定相機 -->
@@ -59,7 +59,9 @@
         <a-entity mindar-image-target="targetIndex: 5">
             <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
         </a-entity>
-        <a-entity geometry="primitive:plane;width:2;height:2;" position="0 0 0" material="shader:gif;src: #lucadance ;repeat: 2 2;alphaTest:0.5;"></a-entity>
+        <a-entity mindar-image-target="targetIndex: 6">
+            <a-plane geometry="primitive:plane;width:2;height:2;" position="0 0 0" material="shader:gif;src: #lucadance;repeat: 2 2;alphaTest:0.5;"></a-plane>
+        </a-entity>
     </a-scene>
 
     <!-- 添加 "funny face" 按鈕 -->
