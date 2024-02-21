@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <title>AR VR</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 </head>
 <body>
-    <a-scene>
-        <a-assets>
-            <video id="cameraStream" autoplay playsinline></video>
-        </a-assets>
-        <a-videosphere src="#cameraStream"></a-videosphere>
-    </a-scene>
+  <a-scene vr-mode-ui="enabled: false">
+    <a-entity camera></a-entity>
+    <a-video id="video" src="" play></a-video>
+  </a-scene>
 
-    <script>
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(function(stream) {
-                var video = document.getElementById('cameraStream');
-                video.srcObject = stream;
-            })
-            .catch(function(error) {
-                console.error("Cannot access camera: ", error);
-            });
-    </script>
+  <script>
+    // Get the video element
+    var video = document.getElementById('video');
+
+    // Ask for permission to use the camera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(function(stream) {
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(function(error) {
+        console.error('Failed to get user media', error);
+      });
+
+    // Set the video as the material for the video sphere
+    video.addEventListener('playing', function() {
+      var videoTexture = new THREE.VideoTexture(video);
+      videoTexture.minFilter = THREE.LinearFilter;
+      videoTexture.magFilter = THREE.LinearFilter;
+      var material = new THREE.MeshBasicMaterial({ map: videoTexture });
+      var sphere = document.querySelector('a-video').getObject3D('mesh');
+      sphere.material = material;
+    });
+  </script>
 </body>
 </html>
