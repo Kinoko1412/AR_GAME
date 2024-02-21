@@ -2,29 +2,20 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MR Game with MindAR and Cardboard VR</title>
-    <!-- 引入 A-Frame、MindAR 和 WebVR Polyfill 的 JavaScript 函式庫 -->
+    <title>AR Game with MindAR</title>
+    <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/webvr-polyfill@0.10.10/build/webvr-polyfill.min.js"></script>
     <script>
         function playVideo() {
             var videoElement = document.querySelector('#lucadance');
             videoElement.play();
         }
-
-        function enterVR() {
-            var scene = document.querySelector('a-scene');
-            if (scene.is('vr-mode')) {
-                scene.exitVR();
-            } else {
-                scene.enterVR();
-            }
-        }
     </script>
     <style>
-        .funny-face-btn, .play-video-btn, .vr-mode-btn {
+        .funny-face-btn {
             position: fixed;
+            left: 10px;
             bottom: 10px;
             padding: 10px 20px;
             background-color: #f0f0f0;
@@ -34,23 +25,23 @@
             z-index: 1000;
         }
 
-        .funny-face-btn {
-            left: 10px;
-        }
-
         .play-video-btn {
+            position: fixed;
             left: 50%;
+            bottom: 10px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
             transform: translateX(-50%); /* 將播放按鈕置中 */
-        }
-
-        .vr-mode-btn {
-            right: 10px;
         }
     </style>
 </head>
 <body>
     <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
-    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: true" device-orientation-permission-ui="enabled: false">
         <!-- 定義場景中使用的資產 -->
         <a-assets>
             <img id="projection" src="images/Projection1.png" />
@@ -89,9 +80,8 @@
         </a-entity>
     </a-scene>
 
-    <!-- 添加控制按鈕 -->
+    <!-- 添加 "funny face" 按鈕 -->
     <button class="funny-face-btn" onclick="window.location.href='https://kinoko1412.github.io/AR_GAME/test/test.html'">Funny Face</button>
     <button class="play-video-btn" onclick="playVideo()">Play Video</button>
-    <button class="vr-mode-btn" onclick="enterVR()">Enter VR</button>
 </body>
 </html>
