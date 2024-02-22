@@ -4,21 +4,6 @@
     <meta charset="utf-8">
     <title>WebAR VR Camera for Cardboard</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script>
-        AFRAME.registerComponent('limit-rotation', {
-            schema: {
-                maxPitch: {type: 'number', default: 30}, // 限制仰視角度
-                minPitch: {type: 'number', default: -30}, // 限制俯視角度
-                maxYaw: {type: 'number', default: 90} // 限制左右旋轉角度
-            },
-            tick: function () {
-                var rotation = this.el.getAttribute('rotation');
-                rotation.x = Math.max(this.data.minPitch, Math.min(this.data.maxPitch, rotation.x));
-                rotation.y = Math.max(-this.data.maxYaw, Math.min(this.data.maxYaw, rotation.y));
-                this.el.setAttribute('rotation', rotation);
-            }
-        });
-    </script>
 </head>
 <body>
     <a-scene>
@@ -28,16 +13,15 @@
 
         <!-- Left eye -->
         <a-entity id="leftEye" position="-0.03 0 0">
-            <a-videosphere src="#video" rotation="0 180 0" scale="10 10 10"></a-videosphere>
+            <a-videosphere src="#video" rotation="0 180 0" scale="10 10 10" geometry="radius: 100"></a-videosphere>
         </a-entity>
 
         <!-- Right eye -->
         <a-entity id="rightEye" position="0.03 0 0">
-            <a-videosphere src="#video" rotation="0 180 0"></a-videosphere>
+            <a-videosphere src="#video" rotation="0 180 0" geometry="radius: 100"></a-videosphere>
         </a-entity>
 
-        <!-- 使用自定義組件限制攝像頭旋轉 -->
-        <a-camera position="0 0 0" fov="100" limit-rotation></a-camera>
+        <a-camera position="0 0 0" fov="100"></a-camera>
     </a-scene>
 
     <script>
