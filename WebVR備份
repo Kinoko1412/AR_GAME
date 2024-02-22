@@ -1,87 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR Game with MindAR</title>
-    <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-        function playVideo() {
-            var videoElement = document.querySelector('#lucadance');
-            videoElement.play();
-        }
-    </script>
-    <style>
-        .funny-face-btn {
-            position: fixed;
-            left: 10px;
-            bottom: 10px;
-            padding: 10px 20px;
-            background-color: #f0f0f0;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        .play-video-btn {
-            position: fixed;
-            left: 50%;
-            bottom: 10px;
-            padding: 10px 20px;
-            background-color: #f0f0f0;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-            transform: translateX(-50%); /* 將播放按鈕置中 */
-        }
-    </style>
+    <meta charset="utf-8">
+    <title>WebAR VR Camera for Cardboard</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 </head>
 <body>
-    <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
-    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-        <!-- 定義場景中使用的資產 -->
+    <a-scene>
         <a-assets>
-            <img id="projection" src="images/Projection1.png" />
-            <a-asset-item id="kinokoModel" src="model/Kinoko.gltf"></a-asset-item>
-            <a-asset-item id="LucaModel" src="model/luca.gltf"></a-asset-item>
-            <a-asset-item id="PetraModel" src="model/Petra.gltf"></a-asset-item>
-            <a-asset-item id="AugustusModel" src="model/lucubs.gltf"></a-asset-item>
-            <a-asset-item id="VentiModel" src="model/venti.gltf"></a-asset-item>
-            <video id="lucadance" src="video/lucadance.mp4" autoplay loop muted playsinline></video>
+            <video id="video" autoplay loop="true" crossorigin="anonymous"></video>
         </a-assets>
 
-        <!-- 設定相機 -->
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <!-- Left eye -->
+        <a-entity id="leftEye" position="-0.03 0 0">
+            <a-videosphere src="#video" rotation="0 180 0" scale="10 10 10" geometry="radius: 100"></a-videosphere>
+        </a-entity>
 
-        <!-- 定義圖像目標並添加 3D 物體和圖像 -->
-        <a-entity mindar-image-target="targetIndex: 0">
-            <a-gltf-model src="#kinokoModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="90 0 0"></a-gltf-model>
+        <!-- Right eye -->
+        <a-entity id="rightEye" position="0.03 0 0">
+            <a-videosphere src="#video" rotation="0 180 0" geometry="radius: 100"></a-videosphere>
         </a-entity>
-        <a-entity mindar-image-target="targetIndex: 1">
-            <a-image src="#projection" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 2">
-            <a-gltf-model src="#LucaModel" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 3">
-            <a-gltf-model src="#PetraModel" position="0 0 0" scale="0.1 0.1 0.1" rotation="90 0 0"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 4">
-            <a-gltf-model src="#AugustusModel" position="0 0 0" scale="0.8 0.8 0.8" rotation="90 0 0"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 5">
-            <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 6">
-            <a-video src="#lucadance" width="1" height="2.5" position="0 0 0" rotation="0 0 0"></a-video>
-        </a-entity>
+
+        <a-camera position="0 0 0" fov="100"></a-camera>
     </a-scene>
 
-    <!-- 添加 "funny face" 按鈕 -->
-    <button class="funny-face-btn" onclick="window.location.href='https://kinoko1412.github.io/AR_GAME/test/test.html'">Funny Face</button>
-    <button class="play-video-btn" onclick="playVideo()">Play Video</button>
+    <script>
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function(stream) {
+                var video = document.getElementById('video');
+                video.srcObject = stream;
+            })
+            .catch(function(error) {
+                console.error("Cannot access camera: ", error);
+            });
+    </script>
 </body>
 </html>
