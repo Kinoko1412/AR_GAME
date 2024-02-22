@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>VR Video View</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <a-scene>
+        <a-assets>
+            <video id="video" autoplay loop crossorigin="anonymous"></video>
+        </a-assets>
+
+        <!-- 調整球面的scale使其足夠大 -->
+        <a-videosphere src="#video" scale="2 2 2"></a-videosphere>
+
+        <!-- 設定攝像頭限制俯仰角度和水平旋轉角度 -->
+        <a-camera position="0 1.6 0" look-controls-enabled="true">
+        </a-camera>
+    </a-scene>
+
+    <script>
+        // 使用WebRTC獲取裝置後鏡頭視頻流
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function(stream) {
+                // 將視頻流設定為video元素的來源
+                var video = document.getElementById('video');
+                video.srcObject = stream;
+            })
+            .catch(function(error) {
+                console.error("Cannot access camera: ", error);
+            });
+
+        // 設定攝像頭旋轉限制
+        AFRAME.registerComponent('camera-look-limits', {
+            dependencies: ['look-controls'],
+            init: function () {
+                var lookControls = this.el.components['look-controls'];
+
+                if (lookControls) {
+                    this.onMouseUp = function () {
+                        // 獲取當前攝像頭的旋轉角度
+                        var currentRotation = lookControls.pitchObject.rotation.x * (180 / Math.PI);
+                        // 限制俯仰角度
+                        if (currentRotation < -30) {
+                            lookControls.pitchObject.rotation.x = -30 * (Math.PI / 180);
+                        }
+                        if (currentRotation > 150) {
+                            lookControls.pitchObject.rotation.x = 150 * (Math.PI / 180);
+                        }
+
+                        // 限制偏航角度
+                        var currentYaw = lookControls.yawObject.rotation.y * (180 / Math.PI);
+                        if (currentYaw < -180) {
+                            lookControls.yawObject.rotation.y = -180 * (Math.PI / 180);
+                        }
+                        if (currentYaw > 180) {
+                            lookControls.yawObject.rotation.y = 180 * (Math.PI / 180);
+                        }
+                    };
+                    window.addEventListener('mouseup', this.onMouseUp);
+                }
+            },
+            remove: function () {
+                window.removeEventListener('mouseup', this.onMouseUp);
+            }
+        });
+
+        // 將自定義組件添加到攝像頭元素
+        document.querySelector('a-camera').setAttribute('camera-look-limits', '');
+    </script>
+</body>
+</html>
