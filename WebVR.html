@@ -2,43 +2,45 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Mobile VR View</title>
+    <title>VR Video View</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-    <a-scene vr-mode-ui="enabled: false" renderer="antialias: true;">
+    <a-scene>
         <a-assets>
-            <video id="video" autoplay loop="true" crossorigin="anonymous"></video>
+            <video id="video" autoplay loop crossorigin="anonymous"></video>
         </a-assets>
 
-        <a-camera id="camera" look-controls="true" wasd-controls-enabled="false"></a-camera>
+        <!-- 調整球面的scale使其足夠大 -->
+        <a-videosphere src="#video" scale="2 2 2"></a-videosphere>
 
-        <a-videosphere src="#video" rotation="0 180 0"></a-videosphere>
+        <!-- 設定攝像頭限制俯仰角度 -->
+        <a-camera position="0 1.6 0" look-controls="true" wasd-controls-enabled="false">
+            <a-animation attribute="rotation"
+                dur="10"
+                fill="forwards"
+                to="0 0 0"
+                repeat="indefinite"></a-animation>
+        </a-camera>
     </a-scene>
 
     <script>
-        // 使用 WebRTC 獲取裝置後鏡頭視頻流
+        // 使用WebRTC獲取裝置後鏡頭視頻流
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(function(stream) {
+                // 將視頻流設定為video元素的來源
                 var video = document.getElementById('video');
                 video.srcObject = stream;
             })
             .catch(function(error) {
                 console.error("Cannot access camera: ", error);
             });
-
-        // 監聽裝置的方向變化
-        window.addEventListener('deviceorientation', function(event) {
-            var alpha = event.alpha; // Z 軸
-            var beta = event.beta;  // X 軸
-            var gamma = event.gamma; // Y 軸
-
-            // 根據裝置方向旋轉視頻球面
-            var videosphere = document.querySelector('a-videosphere');
-            if (videosphere) {
-                videosphere.setAttribute('rotation', {x: -beta, y: -alpha, z: -gamma});
-            }
-        }, true);
     </script>
 </body>
 </html>
