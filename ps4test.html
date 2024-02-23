@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gamepad Test</title>
+</head>
+<body>
+    <script>
+        function updateGamepadStatus() {
+            const gamepads = navigator.getGamepads();
+            for (const gamepad of gamepads) {
+                if (gamepad) {
+                    console.log(`Gamepad ${gamepad.index}: ${gamepad.id}`);
+                    for (const [index, button] of gamepad.buttons.entries()) {
+                        console.log(`Button ${index}: ${button.pressed}`);
+                    }
+                }
+            }
+            requestAnimationFrame(updateGamepadStatus);
+        }
+
+        window.addEventListener("gamepadconnected", (event) => {
+            console.log(`Gamepad connected at index ${event.gamepad.index}: ${event.gamepad.id}`);
+            updateGamepadStatus();
+        });
+
+        window.addEventListener("gamepaddisconnected", (event) => {
+            console.log(`Gamepad disconnected from index ${event.gamepad.index}: ${event.gamepad.id}`);
+        });
+    </script>
+</body>
+</html>
