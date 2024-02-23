@@ -12,7 +12,7 @@
         <!-- Camera with gamepad controls -->
         <a-entity id="cameraRig" position="0 1.6 0">
             <a-entity camera look-controls>
-                <a-entity gamepad-controls gamepad-index="1"></a-entity>
+                <a-entity gamepad-controls gamepad-index="0"></a-entity>
             </a-entity>
         </a-entity>
 
@@ -24,6 +24,40 @@
 
         <!-- Sky -->
         <a-sky color="#ECECEC"></a-sky>
+
+        <!-- Gamepad status text -->
+        <a-text id="gamepadStatus" value="Disconnected" position="1 2 -2" align="right" color="#FF0000"></a-text>
     </a-scene>
+
+    <script>
+        function updateGamepadStatus() {
+            const gamepads = navigator.getGamepads();
+            let connected = false;
+            for (const gamepad of gamepads) {
+                if (gamepad && gamepad.id.includes("PS4")) {
+                    connected = true;
+                    break;
+                }
+            }
+            document.getElementById("gamepadStatus").setAttribute("value", connected ? "Connected" : "Disconnected");
+            document.getElementById("gamepadStatus").setAttribute("color", connected ? "#00FF00" : "#FF0000");
+            requestAnimationFrame(updateGamepadStatus);
+        }
+
+        window.addEventListener("gamepadconnected", (event) => {
+            if (event.gamepad.id.includes("PS4")) {
+                updateGamepadStatus();
+            }
+        });
+
+        window.addEventListener("gamepaddisconnected", (event) => {
+            if (event.gamepad.id.includes("PS4")) {
+                updateGamepadStatus();
+            }
+        });
+
+        // Start checking for gamepad status
+        updateGamepadStatus();
+    </script>
 </body>
 </html>
