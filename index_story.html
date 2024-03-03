@@ -1,69 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Responsive Fullscreen Image Viewer</title>
+    <title>Image Viewer</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
-            overflow: hidden; /* 禁止滾動條 */
+            overflow: hidden;
         }
         #image-container {
-            height: 100%;
-            width: 100%;
-            background-size: contain; /* 確保圖片完整顯示 */
-            background-position: center center; /* 圖片置中 */
-            background-repeat: no-repeat; /* 不重複圖片 */
-            position: relative; /* 相對定位，作為按鈕的父元素 */
+            height: 100vh; /* 使用視窗的高度 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #image-container img {
+            max-height: 100%;
+            max-width: 100%;
         }
         #nav-buttons {
-            position: absolute;
+            position: fixed;
             width: 100%;
-            top: 0; /* 移動到頂部 */
-            padding-top: 10px; /* 頂部的間隙 */
-            text-align: center;
-            z-index: 10; /* 確保按鈕在圖片之上 */
+            top: 10px;
         }
         .button {
-            padding: 0.5em 1em; /* 按鈕內邊距 */
-            font-size: 250%; /* 字體大小增加50% */
-            opacity: 0.7; /* 按鈕透明度，以便圖片可見 */
-            cursor: pointer; /* 鼠標懸停時顯示指標 */
-            background: #fff; /* 按鈕背景色 */
-            border: none; /* 移除邊框 */
-            border-radius: 5px; /* 圓角邊框 */
+            padding: 0.5em 1em;
+            font-size: 350%;
+            opacity: 0.7;
+            cursor: pointer;
         }
         .button:hover {
-            opacity: 1; /* 滑鼠經過時的透明度 */
+            opacity: 1;
         }
         .button-left {
             position: absolute;
-            left: 10px; /* 距離左邊的間隙 */
+            left: 10px;
         }
         .button-right {
             position: absolute;
-            right: 10px; /* 距離右邊的間隙 */
+            right: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="image-container" style="background-image: url('character/chat/chat_0.png');">
-        <div id="nav-buttons">
-            <button class="button button-left" onclick="prevImage()">Previous</button>
-            <button class="button button-right" onclick="nextImage()">Next</button>
-        </div>
+    <div id="image-container">
+        <img id="image" src="character/chat/chat_0.png" alt="Chat Image">
+    </div>
+    <div id="nav-buttons">
+        <button class="button button-left" onclick="prevImage()">Previous</button>
+        <button class="button button-right" onclick="nextImage()">Next</button>
     </div>
 
     <script>
         var imageIndex = 0;
-        var maxIndex = 45; // 最大的圖片索引
+        var maxIndex = 45;
         var imagePath = "character/chat/chat_";
+        var images = [];
+
+        // 預加載圖片
+        function preloadImages() {
+            for (var i = 0; i <= maxIndex; i++) {
+                images[i] = new Image();
+                images[i].src = imagePath + i + '.png';
+            }
+        }
 
         function updateImage() {
-            var imageUrl = imagePath + imageIndex + ".png";
-            document.getElementById("image-container").style.backgroundImage = "url('" + imageUrl + "')";
+            document.getElementById("image").src = images[imageIndex].src;
         }
 
         function nextImage() {
@@ -79,6 +84,9 @@
                 updateImage();
             }
         }
+
+        // 頁面加載時預加載
+        window.onload = preloadImages;
     </script>
 </body>
 </html>
