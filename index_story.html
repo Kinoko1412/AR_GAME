@@ -16,17 +16,23 @@
             background-size: cover; /* 覆蓋整個容器，可能會導致圖片被裁切 */
             background-position: center; /* 圖片置中 */
             background-repeat: no-repeat; /* 不重複圖片 */
+            position: relative; /* 相對定位，作為按鈕的父元素 */
         }
         #nav-buttons {
             position: absolute;
             width: 100%;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 0; /* 移動到頂部 */
+            left: 0;
+            text-align: center;
         }
-        #nav-buttons button {
+        .button {
+            padding: 0.5em 1em; /* 按鈕內邊距 */
+            font-size: 150%; /* 字體大小增加50% */
+            margin-top: 10px; /* 距離頂部的空間 */
             opacity: 0.7; /* 按鈕透明度，以便圖片可見 */
+            cursor: pointer; /* 鼠標懸停時顯示指標 */
         }
-        #nav-buttons button:hover {
+        .button:hover {
             opacity: 1; /* 滑鼠經過時的透明度 */
         }
         .button-left {
@@ -41,11 +47,10 @@
 </head>
 <body>
     <div id="image-container" style="background-image: url('character/chat/chat_0.png');">
-        <!-- 背景圖片將在這裡顯示 -->
-    </div>
-    <div id="nav-buttons">
-        <button class="button-left" onclick="prevImage()">Previous</button>
-        <button class="button-right" onclick="nextImage()">Next</button>
+        <div id="nav-buttons">
+            <button class="button button-left" onclick="prevImage()">Previous</button>
+            <button class="button button-right" onclick="nextImage()">Next</button>
+        </div>
     </div>
 
     <script>
