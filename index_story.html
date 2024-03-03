@@ -1,44 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR Game with MindAR</title>
-    <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-        function playVideo() {
-            var videoElement = document.querySelector('#lucadance');
-            videoElement.play();
-        }
-    </script>
+    <title>Image Viewer</title>
     <style>
-        .play-video-btn {
-            position: fixed;
-            left: 50%;
-            bottom: 10px;
-            padding: 10px 20px;
-            background-color: #f0f0f0;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-            transform: translateX(-50%); /* 將播放按鈕置中 */
+        #image-container {
+            text-align: center;
+        }
+        #nav-buttons {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
-    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-        <!-- 定義場景中使用的資產 -->
-        <a-assets>
-        </a-assets>
+    <div id="image-container">
+        <img id="image" src="/character/chat/chat_0.png" alt="Chat Image">
+    </div>
+    <div id="nav-buttons">
+        <button onclick="prevImage()">Previous</button>
+        <button onclick="nextImage()">Next</button>
+    </div>
 
-        <!-- 設定相機 -->
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-    </a-scene>
+    <script>
+        var imageIndex = 0;
+        var imagePath = "/character/chat/chat_";
 
-    <!-- 添加 "funny face" 按鈕 -->
-    <button class="play-video-btn" onclick="playVideo()">Play Video</button>
+        function updateImage() {
+            var imageUrl = imagePath + imageIndex + ".png";
+            document.getElementById("image").src = imageUrl;
+        }
+
+        function nextImage() {
+            imageIndex++;
+            updateImage();
+        }
+
+        function prevImage() {
+            if (imageIndex > 0) {
+                imageIndex--;
+                updateImage();
+            }
+        }
+    </script>
 </body>
 </html>
