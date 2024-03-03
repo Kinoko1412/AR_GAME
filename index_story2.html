@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Viewer</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        #image-container {
+            height: 100vh; /* 使用視窗的高度 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #image-container img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+        #nav-buttons {
+            position: fixed;
+            width: 100%;
+            top: 10px;
+        }
+        .button {
+            padding: 0.5em 1em;
+            font-size: 350%;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+        .button:hover {
+            opacity: 1;
+        }
+        .button-left {
+            position: absolute;
+            left: 10px;
+        }
+        .button-right {
+            position: absolute;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container">
+        <img id="image" src="character/chat1/chat_0.png" alt="Chat Image">
+    </div>
+    <div id="nav-buttons">
+        <button class="button button-left" onclick="prevImage()">Previous</button>
+        <button class="button button-right" onclick="nextImage()">Next</button>
+    </div>
+
+    <script>
+        var imageIndex = 0;
+        var maxIndex = 23;
+        var imagePath = "character/chat1/chat_";
+        var images = [];
+
+        // 預加載圖片
+        function preloadImages() {
+            for (var i = 0; i <= maxIndex; i++) {
+                images[i] = new Image();
+                images[i].src = imagePath + i + '.png';
+            }
+        }
+
+        function updateImage() {
+            document.getElementById("image").src = images[imageIndex].src;
+        }
+
+        function nextImage() {
+            if (imageIndex < maxIndex) {
+                imageIndex++;
+                updateImage();
+            }
+        }
+
+        function prevImage() {
+            if (imageIndex > 0) {
+                imageIndex--;
+                updateImage();
+            }
+        }
+
+        // 頁面加載時預加載
+        window.onload = preloadImages;
+    </script>
+</body>
+</html>
