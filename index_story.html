@@ -3,26 +3,45 @@
 <head>
     <title>Image Viewer</title>
     <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
         #image-container {
             text-align: center;
+            margin-bottom: 10px; /* 保持圖片和按鈕之間的距離 */
         }
         #nav-buttons {
-            margin-top: 10px;
+            position: absolute;
+            width: 100%;
+            top: 50%; /* 將按鈕置於垂直中間 */
+            transform: translateY(-50%); /* 確保按鈕與圖片中心對齊 */
+        }
+        #nav-buttons button.previous {
+            float: left; /* 將 previous 按鈕放到左邊 */
+        }
+        #nav-buttons button.next {
+            float: right; /* 將 next 按鈕放到右邊 */
         }
     </style>
 </head>
 <body>
     <div id="image-container">
-        <img id="image" src="/character/chat/chat_0.png" alt="Chat Image">
+        <img id="image" src="character/chat/chat_0.png" alt="Chat Image">
     </div>
     <div id="nav-buttons">
-        <button onclick="prevImage()">Previous</button>
-        <button onclick="nextImage()">Next</button>
+        <button class="previous" onclick="prevImage()">Previous</button>
+        <button class="next" onclick="nextImage()">Next</button>
     </div>
 
     <script>
         var imageIndex = 0;
-        var imagePath = "/character/chat/chat_";
+        var maxIndex = 45; // 最大的圖片索引
+        var imagePath = "character/chat/chat_";
 
         function updateImage() {
             var imageUrl = imagePath + imageIndex + ".png";
@@ -30,8 +49,10 @@
         }
 
         function nextImage() {
-            imageIndex++;
-            updateImage();
+            if (imageIndex < maxIndex) {
+                imageIndex++;
+                updateImage();
+            }
         }
 
         function prevImage() {
