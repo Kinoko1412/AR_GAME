@@ -6,21 +6,16 @@
     <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-        function playVideo() {
-            var videoElement = document.querySelector('#lucadance');
-            videoElement.play();
-        }
-    </script>
 </head>
 <body>
     <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
-    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: storyAR/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <!-- 定義場景中使用的資產 -->
         <a-assets>
-            <img id="0" src="storyAR\P\16.png" />
-            <img id="1" src="storyAR\P\muderer.png" />
-            <img id="4" src="storyAR\P\princess.png" />
+            <img id="0" src="storyAR/P/16.png" />
+            <img id="1" src="storyAR/P/muderer.png" />
+            <img id="4" src="storyAR/P/princess.png" />
+
         </a-assets>
 
         <!-- 設定相機 -->
