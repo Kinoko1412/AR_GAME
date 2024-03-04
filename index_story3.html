@@ -14,8 +14,12 @@
         <a-assets>
             <img id="0" src="storyAR/P/16.png" />
             <img id="1" src="storyAR/P/muderer.png" />
-            <img id="4" src="storyAR/P/princess.png" />
-
+            <img id="3" src="storyAR/P/princess.png" />
+            <img id="2" src="storyAR/P/dead.png" />
+            <a-asset-item id="knifeModel" src="storyAR/model/knife.gltf"></a-asset-item>
+            <a-asset-item id="lineModel" src="storyAR/model/line.gltf"></a-asset-item>
+            <a-asset-item id="NotebookModel" src="storyAR/model/Notebook.gltf"></a-asset-item>
+            <a-asset-item id="poisonModel" src="storyAR/model/poison.gltf"></a-asset-item>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -27,8 +31,23 @@
         <a-entity mindar-image-target="targetIndex: 1">
             <a-image src="#1" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
         </a-entity>
+        <a-entity mindar-image-target="targetIndex: 3">
+            <a-image src="#3" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 2">
+            <a-image src="#2" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
+        </a-entity>
         <a-entity mindar-image-target="targetIndex: 4">
-            <a-image src="#4" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
+            <a-gltf-model src="#knifeModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 5">
+            <a-gltf-model src="#NotebookModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 6">
+            <a-gltf-model src="#poisonModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 7">
+            <a-gltf-model src="#lineModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="90 0 0"></a-gltf-model>
         </a-entity>
     </a-scene>
 
