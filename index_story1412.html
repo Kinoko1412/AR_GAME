@@ -32,13 +32,7 @@
 </div>
 
 <div id="success-message">
-    太陽不知道是在甚麼時候出現的
-    <div>當我看向窗外的陽光</div>
-    <div>驀然回首發現公主、侍衛、國靜</div>
-    <div>已全然消失</div>
-    <div>只剩下破舊又空蕩的香菇旅館</div>
-    <div>究竟這一切是個夢</div>
-    <div>還是曾經發生過的一段往事呢?</div>
+    <div id="text"></div>
 </div>
 
 <script>
@@ -47,9 +41,19 @@
         var password = document.getElementById("password").value;
         
         if (username === "公主" && password === "1412") {
-            navigator.vibrate(500); // 震動 200 毫秒
+            navigator.vibrate(500); // 震動 500 毫秒
             document.getElementById("login-form").style.display = "none";
             document.getElementById("success-message").style.display = "block";
+            
+            var text = "太陽不知道是在甚麼時候出現的\n當我看向窗外的陽光\n驀然回首發現公主、侍衛、國靜\n已全然消失\n只剩下破舊又空蕩的香菇旅館\n究竟這一切是個夢\n還是曾經發生過的一段往事呢?";
+            var index = 0;
+            var interval = setInterval(function() {
+                document.getElementById("text").innerText += text[index];
+                index++;
+                if (index === text.length) {
+                    clearInterval(interval);
+                }
+            }, 100); // 每 100 毫秒顯示一個字
         } else {
             alert("輸入的角色名或密碼不正確");
         }
