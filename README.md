@@ -6,3 +6,5 @@ https://kinoko1412.github.io/AR_GAME/index_story
 https://kinoko1412.github.io/AR_GAME/index_story2
 解謎
 https://kinoko1412.github.io/AR_GAME/index_story3
+終章
+https://kinoko1412.github.io/AR_GAME/index_story1412
