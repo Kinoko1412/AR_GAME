@@ -14,6 +14,14 @@
         text-align: center;
         display: none;
     }
+
+    #text {
+        text-align: center;
+        vertical-align: middle;
+        margin: 0 auto;
+        width: 80%;
+        height: 80%;
+    }
 </style>
 </head>
 <body>
@@ -52,8 +60,12 @@
                 index++;
                 if (index === text.length) {
                     clearInterval(interval);
+                } else if (text[index - 1] === '\n') {
+                    setTimeout(function() {
+                        document.getElementById("text").innerHTML += "<br>";
+                    }, 500);
                 }
-            }, 100); // 每 100 毫秒顯示一個字
+            }, 50); // 每 50 毫秒顯示一個字
         } else {
             alert("輸入的角色名或密碼不正確");
         }
