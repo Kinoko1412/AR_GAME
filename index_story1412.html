@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<style>
+    #login-form {
+        text-align: center;
+        margin-top: 20vh;
+    }
+
+    #success-message {
+        text-align: center;
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div id="login-form">
+    <div>
+        <label for="username">輸入角色名:</label>
+        <input type="text" id="username" name="username"><br><br>
+    </div>
+    <div>
+        <label for="password">輸入密碼:</label>
+        <input type="password" id="password" name="password"><br><br>
+    </div>
+    <div>
+        <button id="login-button">確認</button>
+    </div>
+</div>
+
+<div id="success-message">
+    太陽不知道是在甚麼時候出現的
+    <div>當我看向窗外的陽光</div>
+    <div>驀然回首發現公主、侍衛、國靜</div>
+    <div>已全然消失</div>
+    <div>只剩下破舊又空蕩的香菇旅館</div>
+    <div>究竟這一切是個夢</div>
+    <div>還是曾經發生過的一段往事呢?</div>
+</div>
+
+<script>
+    document.getElementById("login-button").addEventListener("click", function() {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        
+        if (username === "公主" && password === "1412") {
+            navigator.vibrate(200); // 震動 200 毫秒
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("success-message").style.display = "block";
+        } else {
+            alert("輸入的角色名或密碼不正確");
+        }
+    });
+</script>
+</body>
+</html>
