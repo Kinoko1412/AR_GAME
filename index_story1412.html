@@ -5,9 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login</title>
 <style>
+    body, html {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     #login-form {
         text-align: center;
-        margin-top: 20vh;
     }
 
     #success-message {
@@ -16,11 +22,8 @@
     }
 
     #text {
+        white-space: pre-wrap; /* 保留空白和換行 */
         text-align: center;
-        vertical-align: middle;
-        margin: 0 auto;
-        width: 80%;
-        height: 80%;
     }
 </style>
 </head>
@@ -51,19 +54,26 @@
         if (username === "公主" && password === "1412") {
             navigator.vibrate(500); // 震動 500 毫秒
             document.getElementById("login-form").style.display = "none";
-            document.getElementById("success-message").style.display = "block";
+            document.getElementById("success-message").style.display = "flex";
             
             var text = "太陽不知道是在甚麼時候出現的\n當我看向窗外的陽光\n驀然回首發現公主、侍衛、國靜\n已全然消失\n只剩下破舊又空蕩的香菇旅館\n究竟這一切是個夢\n還是曾經發生過的一段往事呢?";
             var index = 0;
             var interval = setInterval(function() {
-                document.getElementById("text").innerText += text[index];
+                document.getElementById("text").textContent += text[index]; // 將字元逐一加入文字區域
                 index++;
-                if (index === text.length) {
+                if (index === text.length) { // 如果字元已經加完，停止 interval
                     clearInterval(interval);
-                } else if (text[index - 1] === '\n') {
+                } else if (text[index - 1] === '\n') { // 如果是換行字元，等待 1000 毫秒再繼續
+                    clearInterval(interval);
                     setTimeout(function() {
-                        document.getElementById("text").innerHTML += "<br>";
-                    }, 500);
+                        interval = setInterval(function() {
+                            document.getElementById("text").textContent += text[index];
+                            index++;
+                            if (index === text.length) {
+                                clearInterval(interval);
+                            }
+                        }, 50);
+                    }, 1000);
                 }
             }, 50); // 每 50 毫秒顯示一個字
         } else {
