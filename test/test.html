@@ -12,45 +12,194 @@
         // 檢測是否為安卓設備
         const isAndroid = /Android/i.test(navigator.userAgent);
         
-        // 根據設備類型調整配件位置
-        if (isAndroid) {
-          // 為安卓設備調整配件位置
-          setTimeout(() => {
-            // 調整帽子位置
+        // 添加位置穩定性控制
+        const stabilizeFaceTracking = () => {
+          const sceneEl = document.querySelector('a-scene');
+          
+          // 當人臉被追蹤到時調整位置
+          sceneEl.addEventListener('targetFound', function() {
+            console.log("Face target found");
+            adjustAccessoriesPosition();
+          });
+          
+          // 當人臉追蹤更新時微調位置
+          sceneEl.addEventListener('targetUpdate', function() {
+            // 使用節流函數減少更新頻率，提高穩定性
+            if (!window.throttlePause) {
+              window.throttlePause = true;
+              setTimeout(() => {
+                window.throttlePause = false;
+                adjustAccessoriesPosition();
+              }, 200); // 每200毫秒更新一次位置
+            }
+          });
+        };
+        
+        // 調整配件位置的函數
+        const adjustAccessoriesPosition = () => {
+          if (isAndroid) {
+            // 帽子位置調整
             const hat1 = document.querySelector(".hat1-entity");
             if (hat1) {
-              hat1.setAttribute("position", "0 0.7 -0.5");
-              hat1.setAttribute("scale", "0.3 0.3 0.3");
+              hat1.setAttribute("position", "0 0.65 -0.45");
+              hat1.setAttribute("scale", "0.28 0.28 0.28");
+              hat1.setAttribute("rotation", "0 0 0");
             }
             
             const hat2 = document.querySelector(".hat2-entity");
             if (hat2) {
-              hat2.setAttribute("position", "0 -0.1 -0.5");
-              hat2.setAttribute("scale", "0.007 0.007 0.007");
+              hat2.setAttribute("position", "0 -0.05 -0.45");
+              hat2.setAttribute("scale", "0.0065 0.0065 0.0065");
             }
             
-            // 調整眼鏡位置
+            // 眼鏡位置調整
             const glasses1 = document.querySelector(".glasses1-entity");
             if (glasses1) {
-              glasses1.setAttribute("position", "0 -0.05 0");
-              glasses1.setAttribute("scale", "0.009 0.009 0.009");
+              glasses1.setAttribute("position", "0 -0.03 -0.02");
+              glasses1.setAttribute("scale", "0.008 0.008 0.008");
             }
             
             const glasses2 = document.querySelector(".glasses2-entity");
             if (glasses2) {
-              glasses2.setAttribute("position", "0 -0.25 0");
-              glasses2.setAttribute("scale", "0.55 0.55 0.55");
+              glasses2.setAttribute("position", "0 -0.22 -0.05");
+              glasses2.setAttribute("scale", "0.5 0.5 0.5");
             }
             
-            // 調整耳環位置
+            // 耳環位置調整
             const earrings = document.querySelectorAll(".earring-entity");
-            earrings.forEach(earring => {
-              const currentPos = earring.getAttribute("position");
-              earring.setAttribute("position", `${currentPos.x} ${currentPos.y - 0.05} ${currentPos.z}`);
+            earrings.forEach((earring, index) => {
+              // 左右耳環分別調整
+              if (index === 0) { // 左耳
+                earring.setAttribute("position", "0 -0.28 -0.28");
+              } else { // 右耳
+                earring.setAttribute("position", "0 -0.28 -0.28");
+              }
+              earring.setAttribute("scale", "0.045 0.045 0.045");
             });
-          }, 1000); // 延遲1秒執行，確保模型已加載
-        }
+          }
+        };
         
+        // 添加手動微調控制面板（調試用）
+        const addAdjustmentControls = () => {
+          const controlPanel = document.createElement("div");
+          controlPanel.style.position = "fixed";
+          controlPanel.style.right = "10px";
+          controlPanel.style.bottom = "10px";
+          controlPanel.style.background = "rgba(0,0,0,0.7)";
+          controlPanel.style.color = "white";
+          controlPanel.style.padding = "10px";
+          controlPanel.style.borderRadius = "5px";
+          controlPanel.style.zIndex = "1000";
+          controlPanel.style.display = "none"; // 默認隱藏
+          
+          controlPanel.innerHTML = `
+            <div style="margin-bottom:5px">位置微調</div>
+            <button id="adjust-up">上移</button>
+            <button id="adjust-down">下移</button>
+            <button id="adjust-left">左移</button>
+            <button id="adjust-right">右移</button>
+            <button id="adjust-forward">前移</button>
+            <button id="adjust-back">後移</button>
+            <div style="margin:5px 0">縮放: <input type="range" id="adjust-scale" min="50" max="150" value="100"></div>
+            <div><button id="toggle-debug">關閉</button></div>
+          `;
+          
+          document.body.appendChild(controlPanel);
+          
+          // 添加調試按鈕
+          const debugBtn = document.createElement("button");
+          debugBtn.textContent = "調試";
+          debugBtn.style.position = "fixed";
+          debugBtn.style.right = "10px";
+          debugBtn.style.top = "10px";
+          debugBtn.style.zIndex = "1000";
+          document.body.appendChild(debugBtn);
+          
+          debugBtn.addEventListener("click", () => {
+            controlPanel.style.display = controlPanel.style.display === "none" ? "block" : "none";
+          });
+          
+          document.getElementById("toggle-debug").addEventListener("click", () => {
+            controlPanel.style.display = "none";
+          });
+          
+          // 添加微調事件
+          const adjustStep = 0.02;
+          const currentItem = { name: "hat1" }; // 默認調整帽子1
+          
+          document.getElementById("adjust-up").addEventListener("click", () => {
+            adjustItemPosition(currentItem.name, 0, adjustStep, 0);
+          });
+          
+          document.getElementById("adjust-down").addEventListener("click", () => {
+            adjustItemPosition(currentItem.name, 0, -adjustStep, 0);
+          });
+          
+          document.getElementById("adjust-left").addEventListener("click", () => {
+            adjustItemPosition(currentItem.name, -adjustStep, 0, 0);
+          });
+          
+          document.getElementById("adjust-right").addEventListener("click", () => {
+            adjustItemPosition(currentItem.name, adjustStep, 0, 0);
+          });
+          
+          document.getElementById("adjust-forward").addEventListener("click", () => {
+            adjustItemPosition(currentItem.name, 0, 0, -adjustStep);
+          });
+          
+          document.getElementById("adjust-back").addEventListener("click", () => {
+            adjustItemPosition(currentItem.name, 0, 0, adjustStep);
+          });
+          
+          document.getElementById("adjust-scale").addEventListener("input", (e) => {
+            const scaleRatio = parseInt(e.target.value) / 100;
+            adjustItemScale(currentItem.name, scaleRatio);
+          });
+          
+          // 點擊配件縮略圖時切換當前調整的配件
+          list.forEach(item => {
+            const button = document.querySelector("#" + item);
+            button.addEventListener("dblclick", () => {
+              currentItem.name = item;
+              alert(`現在調整: ${item}`);
+            });
+          });
+        };
+        
+        // 調整特定配件的位置
+        const adjustItemPosition = (itemName, x, y, z) => {
+          const entities = document.querySelectorAll("." + itemName + "-entity");
+          entities.forEach(entity => {
+            const pos = entity.getAttribute("position");
+            const newX = typeof pos.x === 'number' ? pos.x + x : parseFloat(pos.x) + x;
+            const newY = typeof pos.y === 'number' ? pos.y + y : parseFloat(pos.y) + y;
+            const newZ = typeof pos.z === 'number' ? pos.z + z : parseFloat(pos.z) + z;
+            entity.setAttribute("position", `${newX} ${newY} ${newZ}`);
+            console.log(`${itemName} 位置: ${newX}, ${newY}, ${newZ}`);
+          });
+        };
+        
+        // 調整特定配件的縮放
+        const adjustItemScale = (itemName, ratio) => {
+          const entities = document.querySelectorAll("." + itemName + "-entity");
+          entities.forEach(entity => {
+            const scale = entity.getAttribute("scale");
+            const baseScale = entity.dataset.baseScale ? JSON.parse(entity.dataset.baseScale) : scale;
+            
+            // 保存基礎縮放值
+            if (!entity.dataset.baseScale) {
+              entity.dataset.baseScale = JSON.stringify(scale);
+            }
+            
+            const newX = typeof baseScale.x === 'number' ? baseScale.x * ratio : parseFloat(baseScale.x) * ratio;
+            const newY = typeof baseScale.y === 'number' ? baseScale.y * ratio : parseFloat(baseScale.y) * ratio;
+            const newZ = typeof baseScale.z === 'number' ? baseScale.z * ratio : parseFloat(baseScale.z) * ratio;
+            entity.setAttribute("scale", `${newX} ${newY} ${newZ}`);
+            console.log(`${itemName} 縮放: ${newX}, ${newY}, ${newZ}`);
+          });
+        };
+        
+        // 設置配件可見性
         const setVisible = (button, entities, visible) => {
           if (visible) {
             button.classList.add("selected");
@@ -62,6 +211,7 @@
           });
         }
         
+        // 初始化配件可見性
         list.forEach((item, index) => {
           const button = document.querySelector("#" + item);
           const entities = document.querySelectorAll("." + item + "-entity");
@@ -72,18 +222,31 @@
           });
         });
         
-        // 添加設備信息顯示（調試用，可以在正式版中移除）
+        // 添加設備信息顯示
         const deviceInfo = document.createElement("div");
         deviceInfo.style.position = "fixed";
-        deviceInfo.style.right = "10px";
+        deviceInfo.style.left = "10px";
         deviceInfo.style.top = "10px";
         deviceInfo.style.background = "rgba(0,0,0,0.5)";
         deviceInfo.style.color = "white";
         deviceInfo.style.padding = "5px";
         deviceInfo.style.fontSize = "10px";
         deviceInfo.style.zIndex = "1000";
-        deviceInfo.innerHTML = `設備: ${isAndroid ? "Android" : "其他"}<br>UA: ${navigator.userAgent.substring(0, 50)}...`;
+        deviceInfo.innerHTML = `設備: ${isAndroid ? "Android" : "其他"}`;
         document.body.appendChild(deviceInfo);
+        
+        // 初始化穩定性控制
+        stabilizeFaceTracking();
+        
+        // 在頁面加載後延遲調整位置
+        setTimeout(() => {
+          adjustAccessoriesPosition();
+          
+          // 只在調試模式下添加微調控制
+          if (window.location.search.includes('debug=true')) {
+            addAdjustmentControls();
+          }
+        }, 1000);
       })
     </script>
     
