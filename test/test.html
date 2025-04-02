@@ -6,29 +6,88 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-aframe.prod.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-	const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
-	const visibles = [true, false, false, true, true];
-	const setVisible = (button, entities, visible) => {
-	  if (visible) {
-	    button.classList.add("selected");
-	  } else {
-	    button.classList.remove("selected");
-	  }
-	  entities.forEach((entity) => {
-	    entity.setAttribute("visible", visible);
-	  });
-	}
-	list.forEach((item, index) => {
-	  const button = document.querySelector("#" + item);
-	  const entities = document.querySelectorAll("." + item + "-entity");
-	  setVisible(button, entities, visibles[index]);
-	  button.addEventListener('click', () => {
-	    visibles[index] = !visibles[index];
-	    setVisible(button, entities, visibles[index]);
-	  });
-	});
+        const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
+        const visibles = [true, false, false, true, true];
+        
+        // 檢測是否為安卓設備
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        // 根據設備類型調整配件位置
+        if (isAndroid) {
+          // 為安卓設備調整配件位置
+          setTimeout(() => {
+            // 調整帽子位置
+            const hat1 = document.querySelector(".hat1-entity");
+            if (hat1) {
+              hat1.setAttribute("position", "0 0.7 -0.5");
+              hat1.setAttribute("scale", "0.3 0.3 0.3");
+            }
+            
+            const hat2 = document.querySelector(".hat2-entity");
+            if (hat2) {
+              hat2.setAttribute("position", "0 -0.1 -0.5");
+              hat2.setAttribute("scale", "0.007 0.007 0.007");
+            }
+            
+            // 調整眼鏡位置
+            const glasses1 = document.querySelector(".glasses1-entity");
+            if (glasses1) {
+              glasses1.setAttribute("position", "0 -0.05 0");
+              glasses1.setAttribute("scale", "0.009 0.009 0.009");
+            }
+            
+            const glasses2 = document.querySelector(".glasses2-entity");
+            if (glasses2) {
+              glasses2.setAttribute("position", "0 -0.25 0");
+              glasses2.setAttribute("scale", "0.55 0.55 0.55");
+            }
+            
+            // 調整耳環位置
+            const earrings = document.querySelectorAll(".earring-entity");
+            earrings.forEach(earring => {
+              const currentPos = earring.getAttribute("position");
+              earring.setAttribute("position", `${currentPos.x} ${currentPos.y - 0.05} ${currentPos.z}`);
+            });
+          }, 1000); // 延遲1秒執行，確保模型已加載
+        }
+        
+        const setVisible = (button, entities, visible) => {
+          if (visible) {
+            button.classList.add("selected");
+          } else {
+            button.classList.remove("selected");
+          }
+          entities.forEach((entity) => {
+            entity.setAttribute("visible", visible);
+          });
+        }
+        
+        list.forEach((item, index) => {
+          const button = document.querySelector("#" + item);
+          const entities = document.querySelectorAll("." + item + "-entity");
+          setVisible(button, entities, visibles[index]);
+          button.addEventListener('click', () => {
+            visibles[index] = !visibles[index];
+            setVisible(button, entities, visibles[index]);
+          });
+        });
+        
+        // 添加設備信息顯示（調試用，可以在正式版中移除）
+        const deviceInfo = document.createElement("div");
+        deviceInfo.style.position = "fixed";
+        deviceInfo.style.right = "10px";
+        deviceInfo.style.top = "10px";
+        deviceInfo.style.background = "rgba(0,0,0,0.5)";
+        deviceInfo.style.color = "white";
+        deviceInfo.style.padding = "5px";
+        deviceInfo.style.fontSize = "10px";
+        deviceInfo.style.zIndex = "1000";
+        deviceInfo.innerHTML = `設備: ${isAndroid ? "Android" : "其他"}<br>UA: ${navigator.userAgent.substring(0, 50)}...`;
+        document.body.appendChild(deviceInfo);
       })
     </script>
+    
+    <!-- 其餘樣式和HTML保持不變 -->
     <style>
       body {
         margin: 0;
@@ -40,33 +99,32 @@
         height: 100%;
       }
       .options-panel {
-	position: fixed;
-	left: 0;
-	top: 0;
-	z-index: 2;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 2;
       }
       .options-panel img {
-	border: solid 2px;
-	width: 50px;
-	height: 50px;
-	object-fit: cover;
-	cursor: pointer;
+        border: solid 2px;
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        cursor: pointer;
       }
       .options-panel img.selected {
-	border-color: green;
+        border-color: green;
       }
       .ar-game-btn {
-    position: fixed;
-    left: 10px;
-    bottom: 10px;
-    padding: 10px 20px;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000;
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        padding: 10px 20px;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
       }
-
     </style>
   </head>
   <body>
