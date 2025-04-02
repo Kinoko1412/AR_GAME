@@ -1,122 +1,129 @@
 
-<!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-aframe.prod.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
-        const visibles = [true, false, false, true, true];
-        
-        // 檢測是否為安卓設備
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        
-        // 簡化的配件位置調整函數
-        if (isAndroid) {
-          setTimeout(() => {
-            // 調整帽子位置
-            const hat1 = document.querySelector(".hat1-entity");
-            if (hat1) {
-              hat1.setAttribute("position", "0 0.7 -0.5");
-              hat1.setAttribute("scale", "0.3 0.3 0.3");
-            }
-            
-            const hat2 = document.querySelector(".hat2-entity");
-            if (hat2) {
-              hat2.setAttribute("position", "0 -0.1 -0.5");
-              hat2.setAttribute("scale", "0.007 0.007 0.007");
-            }
-            
-            // 調整眼鏡位置
-            const glasses1 = document.querySelector(".glasses1-entity");
-            if (glasses1) {
-              glasses1.setAttribute("position", "0 -0.05 0");
-              glasses1.setAttribute("scale", "0.009 0.009 0.009");
-            }
-            
-            const glasses2 = document.querySelector(".glasses2-entity");
-            if (glasses2) {
-              glasses2.setAttribute("position", "0 -0.25 0");
-              glasses2.setAttribute("scale", "0.55 0.55 0.55");
-            }
-            
-            // 調整耳環位置
-            const earrings = document.querySelectorAll(".earring-entity");
-            earrings.forEach((earring, index) => {
-              // 左右耳環分別調整
-              if (index === 0) { // 左耳
-                earring.setAttribute("position", "0 -0.28 -0.28");
-              } else { // 右耳
-                earring.setAttribute("position", "0 -0.28 -0.28");
-              }
-              earring.setAttribute("scale", "0.045 0.045 0.045");
-            });
-          }, 1000); // 延遲1秒執行，確保模型已加載
-        }
-        
-        // 設置配件可見性
-        const setVisible = (button, entities, visible) => {
-          if (visible) {
-            button.classList.add("selected");
-          } else {
-            button.classList.remove("selected");
-          }
-          entities.forEach((entity) => {
-            entity.setAttribute("visible", visible);
-          });
-        }
-        
-        // 初始化配件可見性
-        list.forEach((item, index) => {
-          const button = document.querySelector("#" + item);
-          const entities = document.querySelectorAll("." + item + "-entity");
-          setVisible(button, entities, visibles[index]);
-          button.addEventListener('click', () => {
-            visibles[index] = !visibles[index];
-            setVisible(button, entities, visibles[index]);
-          });
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "mindar-face-three":"https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-three.prod.js"
+      }
+    }
+    </script>
+    <script type="module">
+      import * as THREE from 'three';
+      import { MindARThree } from 'mindar-face-three';
+
+      const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
+      const visibles = [true, false, false, true, true];
+      
+      const mindarThree = new MindARThree({
+        container: document.querySelector("#container")
+      });
+      
+      const { renderer, scene, camera } = mindarThree;
+      const anchors = [];
+      
+      // 創建多個錨點用於不同配件
+      for(let i = 0; i < 5; i++) {
+        anchors.push(mindarThree.addAnchor(i));
+      }
+      
+      // 創建配件的3D對象
+      const accessories = {};
+      
+      // 載入配件模型
+      const loadAccessory = async (name, anchor, visible) => {
+        const geometry = new THREE.SphereGeometry(0.1, 32, 16);
+        const material = new THREE.MeshBasicMaterial({ 
+          color: 0x00ffff, 
+          transparent: true, 
+          opacity: visible ? 0.5 : 0
         });
-        
-        // 添加簡單的設備信息顯示（可選）
-        const deviceInfo = document.createElement("div");
-        deviceInfo.style.position = "fixed";
-        deviceInfo.style.right = "10px";
-        deviceInfo.style.top = "10px";
-        deviceInfo.style.background = "rgba(0,0,0,0.5)";
-        deviceInfo.style.color = "white";
-        deviceInfo.style.padding = "5px";
-        deviceInfo.style.fontSize = "10px";
-        deviceInfo.style.zIndex = "1000";
-        deviceInfo.innerHTML = `設備: ${isAndroid ? "Android" : "其他"}`;
-        document.body.appendChild(deviceInfo);
-      })
+        const mesh = new THREE.Mesh(geometry, material);
+        accessories[name] = mesh;
+        anchor.group.add(mesh);
+      };
+      
+      // 初始化所有配件
+      list.forEach((name, i) => {
+        loadAccessory(name, anchors[i], visibles[i]);
+      });
+      
+      // 切換配件可見性
+      const toggleAccessory = (name) => {
+        if (accessories[name]) {
+          const isVisible = accessories[name].material.opacity > 0;
+          accessories[name].material.opacity = isVisible ? 0 : 0.5;
+        }
+      };
+      
+      // 添加點擊事件
+      list.forEach((name) => {
+        const element = document.getElementById(name);
+        if (element) {
+          element.addEventListener('click', () => {
+            toggleAccessory(name);
+          });
+        }
+      });
+      
+      const start = async() => {
+        await mindarThree.start();
+        renderer.setAnimationLoop(() => {
+          renderer.render(scene, camera);
+        });
+      };
+      
+      const startButton = document.querySelector("#startButton");
+      startButton.addEventListener("click", () => {
+        start();
+      });
+      
+      const stopButton = document.querySelector("#stopButton");
+      stopButton.addEventListener("click", () => {
+        mindarThree.stop();
+        mindarThree.renderer.setAnimationLoop(null);
+      });
     </script>
     <style>
       body {
         margin: 0;
       }
-      .example-container {
+      #container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
         overflow: hidden;
-        position: absolute;
-        width: 100%;
-        height: 100%;
+      }
+      #control {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 2;
       }
       .options-panel {
         position: fixed;
-        left: 0;
+        right: 0;
         top: 0;
-        z-index: 2;
+        bottom: 0;
+        width: 80px;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
       }
       .options-panel img {
-        border: solid 2px;
         width: 50px;
         height: 50px;
-        object-fit: cover;
+        margin-bottom: 10px;
+        border: 2px solid white;
         cursor: pointer;
       }
-      .options-panel img.selected {
+      .options-panel img:hover {
         border-color: green;
       }
       .ar-game-btn {
@@ -133,48 +140,18 @@
     </style>
   </head>
   <body>
-    <div class="example-container">
-      <div class="options-panel">
-	<img id="hat1" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat/thumbnail.png"/>
-	<img id="hat2" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat2/thumbnail.png"/>
-	<img id="glasses1" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses/thumbnail.png"/>
-	<img id="glasses2" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses2/thumbnail.png"/>
-	<img id="earring" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/earring/thumbnail.png"/>
-  <a href="https://kinoko1412.github.io/AR_GAME/" class="ar-game-btn">AR Game</a>
-      </div>
-      <a-scene mindar-face embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-        <a-assets>
-          <a-asset-item id="headModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/sparkar/headOccluder.glb"></a-asset-item>
-          <a-asset-item id="glassesModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses/scene.gltf"></a-asset-item>
-          <a-asset-item id="glassesModel2" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses2/scene.gltf"></a-asset-item>
-          <a-asset-item id="hatModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat/scene.gltf"></a-asset-item>
-          <a-asset-item id="hatModel2" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat2/scene.gltf"></a-asset-item>
-          <a-asset-item id="earringModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/earring/scene.gltf"></a-asset-item>
-        </a-assets>
-        <a-camera active="false" position="0 0 0"></a-camera>
-	<!-- head occluder -->
-        <a-entity mindar-face-target="anchorIndex: 168">
-	  <a-gltf-model mindar-face-occluder position="0 -0.3 0.15"rotation="0 0 0" scale="0.065 0.065 0.065" src="#headModel"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-face-target="anchorIndex: 10">
-	  <a-gltf-model rotation="0 -0 0" position="0 1.0 -0.5" scale="0.35 0.35 0.35" src="#hatModel" class="hat1-entity" visible="false"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-face-target="anchorIndex: 10">
-	  <a-gltf-model rotation="0 -0 0" position="0 -0.2 -0.5" scale="0.008 0.008 0.008" src="#hatModel2" class="hat2-entity" visible="false"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-face-target="anchorIndex: 168">
-	  <a-gltf-model rotation="0 -0 0" position="0 0 0" scale="0.01 0.01 0.01" src="#glassesModel" class="glasses1-entity" visible="false"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-face-target="anchorIndex: 168">
-	  <a-gltf-model rotation="0 -90 0" position="0 -0.3 0" scale="0.6 0.6 0.6" src="#glassesModel2" class="glasses2-entity" visible="false"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-face-target="anchorIndex: 127">
-	  <a-gltf-model rotation="-0.1 -0 0" position="0 -0.3 -0.3" scale="0.05 0.05 0.05" src="#earringModel" class="earring-entity" visible="false"></a-gltf-model>
-        </a-entity>
-        <a-entity mindar-face-target="anchorIndex: 356">
-	  <a-gltf-model rotation="0.1 -0 0" position="0 -0.3 -0.3" scale="0.05 0.05 0.05" src="#earringModel" class="earring-entity" visible="false"></a-gltf-model>
-        </a-entity>
-      </a-scene>
+    <div id="control">
+      <button id="startButton">Start</button>
+      <button id="stopButton">Stop</button>
+    </div>
+    <div id="container"></div>
+    <div class="options-panel">
+      <img id="hat1" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat/thumbnail.png"/>
+      <img id="hat2" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat2/thumbnail.png"/>
+      <img id="glasses1" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses/thumbnail.png"/>
+      <img id="glasses2" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/glasses2/thumbnail.png"/>
+      <img id="earring" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/earring/thumbnail.png"/>
+      <a href="https://kinoko1412.github.io/AR_GAME/" class="ar-game-btn">AR Game</a>
     </div>
   </body>
 </html>
