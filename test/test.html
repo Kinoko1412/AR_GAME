@@ -10,294 +10,51 @@
         const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
         const visibles = [true, false, false, true, true];
         
-        // 檢測設備類型
+        // 檢測是否為安卓設備
         const isAndroid = /Android/i.test(navigator.userAgent);
         
-        // 臉部追蹤穩定性控制模塊
-        const stabilizeFaceTracking = () => {
-          const sceneEl = document.querySelector('a-scene');
-          let headPosition = null;
-          let lastPosition = null;
-          let positionBuffer = [];
-          let isInitialized = false;
-          const bufferSize = 8; // 位置緩衝區大小，用於平滑處理
-          const smoothingFactor = 0.15; // 平滑過渡係數，控制移動速度
-          
-          // 計算多個位置的平均值，用於穩定追蹤
-          const calculateAveragePosition = (positions) => {
-            if (positions.length === 0) return null;
-            const sum = positions.reduce((acc, pos) => ({
-              x: acc.x + pos.x,
-              y: acc.y + pos.y,
-              z: acc.z + pos.z
-            }), { x: 0, y: 0, z: 0 });
-            return {
-              x: sum.x / positions.length,
-              y: sum.y / positions.length,
-              z: sum.z / positions.length
-            };
-          };
-
-          // 實現平滑過渡效果
-          const smoothPosition = (current, target) => {
-            if (!current) return target;
-            return {
-              x: current.x + (target.x - current.x) * smoothingFactor,
-              y: current.y + (target.y - current.y) * smoothingFactor,
-              z: current.z + (target.z - current.z) * smoothingFactor
-            };
-          };
-          
-          // 人臉檢測事件處理
-          sceneEl.addEventListener('targetFound', function() {
-            console.log("Face target found");
-            const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
-            if (headAnchor) {
-              const newPosition = headAnchor.object3D.position;
-              headPosition = { ...newPosition };
-              lastPosition = { ...newPosition };
-              positionBuffer = [{ ...newPosition }];
-              console.log("Initial head position:", headPosition);
-              if (!isInitialized) {
-                adjustAccessoriesPosition(headPosition);
-                isInitialized = true;
-              }
-            }
-          });
-          
-          // 人臉追蹤更新處理
-          sceneEl.addEventListener('targetUpdate', function() {
-            if (!window.throttlePause && headPosition) {
-              window.throttlePause = true;
-              setTimeout(() => {
-                window.throttlePause = false;
-                const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
-                if (headAnchor) {
-                  const newPosition = headAnchor.object3D.position;
-                  
-                  // 檢查位置變化幅度
-                  const positionChange = {
-                    x: Math.abs(newPosition.x - lastPosition.x),
-                    y: Math.abs(newPosition.y - lastPosition.y),
-                    z: Math.abs(newPosition.z - lastPosition.z)
-                  };
-                  
-                  // 位置變化在閾值內才更新
-                  if (positionChange.x < 0.3 && positionChange.y < 0.3 && positionChange.z < 0.3) {
-                    positionBuffer.push({ ...newPosition });
-                    if (positionBuffer.length > bufferSize) {
-                      positionBuffer.shift();
-                    }
-                    
-                    // 應用平滑過渡
-                    const avgPosition = calculateAveragePosition(positionBuffer);
-                    if (avgPosition) {
-                      headPosition = smoothPosition(lastPosition, avgPosition);
-                      lastPosition = { ...headPosition };
-                      adjustAccessoriesPosition(headPosition);
-                    }
-                  }
-                }
-              }, 100);
-            }
-          });
-          
-          // 人臉追蹤丟失處理
-          sceneEl.addEventListener('targetLost', function() {
-            console.log("Face target lost");
-            headPosition = null;
-            lastPosition = null;
-            positionBuffer = [];
-            isInitialized = false;
-          });
-        };
-        
-        // 配件位置調整模塊
-        const adjustAccessoriesPosition = (headPosition) => {
-          if (isAndroid) {
-            const headOffset = headPosition ? headPosition : { x: 0, y: 0, z: 0 };
-            
+        // 簡化的配件位置調整函數
+        if (isAndroid) {
+          setTimeout(() => {
             // 調整帽子位置
             const hat1 = document.querySelector(".hat1-entity");
             if (hat1) {
-              const hat1Pos = {
-                x: headOffset.x,
-                y: headOffset.y + 0.65,
-                z: headOffset.z - 0.45
-              };
-              hat1.setAttribute("position", `${hat1Pos.x} ${hat1Pos.y} ${hat1Pos.z}`);
-              hat1.setAttribute("scale", "0.28 0.28 0.28");
-              hat1.setAttribute("rotation", "0 0 0");
+              hat1.setAttribute("position", "0 0.7 -0.5");
+              hat1.setAttribute("scale", "0.3 0.3 0.3");
             }
             
             const hat2 = document.querySelector(".hat2-entity");
             if (hat2) {
-              const hat2Pos = {
-                x: headOffset.x,
-                y: headOffset.y - 0.05,
-                z: headOffset.z - 0.45
-              };
-              hat2.setAttribute("position", `${hat2Pos.x} ${hat2Pos.y} ${hat2Pos.z}`);
-              hat2.setAttribute("scale", "0.0065 0.0065 0.0065");
+              hat2.setAttribute("position", "0 -0.1 -0.5");
+              hat2.setAttribute("scale", "0.007 0.007 0.007");
             }
             
-            // 眼鏡位置調整
+            // 調整眼鏡位置
             const glasses1 = document.querySelector(".glasses1-entity");
             if (glasses1) {
-              const glasses1Pos = {
-                x: headOffset.x,
-                y: headOffset.y - 0.03,
-                z: headOffset.z - 0.02
-              };
-              glasses1.setAttribute("position", `${glasses1Pos.x} ${glasses1Pos.y} ${glasses1Pos.z}`);
-              glasses1.setAttribute("scale", "0.008 0.008 0.008");
+              glasses1.setAttribute("position", "0 -0.05 0");
+              glasses1.setAttribute("scale", "0.009 0.009 0.009");
             }
             
             const glasses2 = document.querySelector(".glasses2-entity");
             if (glasses2) {
-              const glasses2Pos = {
-                x: headOffset.x,
-                y: headOffset.y - 0.22,
-                z: headOffset.z - 0.05
-              };
-              glasses2.setAttribute("position", `${glasses2Pos.x} ${glasses2Pos.y} ${glasses2Pos.z}`);
-              glasses2.setAttribute("scale", "0.5 0.5 0.5");
+              glasses2.setAttribute("position", "0 -0.25 0");
+              glasses2.setAttribute("scale", "0.55 0.55 0.55");
             }
             
-            // 耳環位置調整
+            // 調整耳環位置
             const earrings = document.querySelectorAll(".earring-entity");
             earrings.forEach((earring, index) => {
               // 左右耳環分別調整
-              const earringPos = {
-                x: headOffset.x + (index === 0 ? -0.1 : 0.1), // 左右耳位置偏移
-                y: headOffset.y - 0.28,
-                z: headOffset.z - 0.28
-              };
-              earring.setAttribute("position", `${earringPos.x} ${earringPos.y} ${earringPos.z}`);
+              if (index === 0) { // 左耳
+                earring.setAttribute("position", "0 -0.28 -0.28");
+              } else { // 右耳
+                earring.setAttribute("position", "0 -0.28 -0.28");
+              }
               earring.setAttribute("scale", "0.045 0.045 0.045");
             });
-          }
-        };
-        
-        // 調試用控制面板
-        const addAdjustmentControls = () => {
-          const controlPanel = document.createElement("div");
-          controlPanel.style.position = "fixed";
-          controlPanel.style.right = "10px";
-          controlPanel.style.bottom = "10px";
-          controlPanel.style.background = "rgba(0,0,0,0.7)";
-          controlPanel.style.color = "white";
-          controlPanel.style.padding = "10px";
-          controlPanel.style.borderRadius = "5px";
-          controlPanel.style.zIndex = "1000";
-          controlPanel.style.display = "none"; // 默認隱藏
-          
-          controlPanel.innerHTML = `
-            <div style="margin-bottom:5px">位置微調</div>
-            <button id="adjust-up">上移</button>
-            <button id="adjust-down">下移</button>
-            <button id="adjust-left">左移</button>
-            <button id="adjust-right">右移</button>
-            <button id="adjust-forward">前移</button>
-            <button id="adjust-back">後移</button>
-            <div style="margin:5px 0">縮放: <input type="range" id="adjust-scale" min="50" max="150" value="100"></div>
-            <div><button id="toggle-debug">關閉</button></div>
-          `;
-          
-          document.body.appendChild(controlPanel);
-          
-          // 添加調試按鈕
-          const debugBtn = document.createElement("button");
-          debugBtn.textContent = "調試";
-          debugBtn.style.position = "fixed";
-          debugBtn.style.right = "10px";
-          debugBtn.style.top = "10px";
-          debugBtn.style.zIndex = "1000";
-          document.body.appendChild(debugBtn);
-          
-          debugBtn.addEventListener("click", () => {
-            controlPanel.style.display = controlPanel.style.display === "none" ? "block" : "none";
-          });
-          
-          document.getElementById("toggle-debug").addEventListener("click", () => {
-            controlPanel.style.display = "none";
-          });
-          
-          // 添加微調事件
-          const adjustStep = 0.02;
-          const currentItem = { name: "hat1" }; // 默認調整帽子1
-          
-          document.getElementById("adjust-up").addEventListener("click", () => {
-            adjustItemPosition(currentItem.name, 0, adjustStep, 0);
-          });
-          
-          document.getElementById("adjust-down").addEventListener("click", () => {
-            adjustItemPosition(currentItem.name, 0, -adjustStep, 0);
-          });
-          
-          document.getElementById("adjust-left").addEventListener("click", () => {
-            adjustItemPosition(currentItem.name, -adjustStep, 0, 0);
-          });
-          
-          document.getElementById("adjust-right").addEventListener("click", () => {
-            adjustItemPosition(currentItem.name, adjustStep, 0, 0);
-          });
-          
-          document.getElementById("adjust-forward").addEventListener("click", () => {
-            adjustItemPosition(currentItem.name, 0, 0, -adjustStep);
-          });
-          
-          document.getElementById("adjust-back").addEventListener("click", () => {
-            adjustItemPosition(currentItem.name, 0, 0, adjustStep);
-          });
-          
-          document.getElementById("adjust-scale").addEventListener("input", (e) => {
-            const scaleRatio = parseInt(e.target.value) / 100;
-            adjustItemScale(currentItem.name, scaleRatio);
-          });
-          
-          // 點擊配件縮略圖時切換當前調整的配件
-          list.forEach(item => {
-            const button = document.querySelector("#" + item);
-            button.addEventListener("dblclick", () => {
-              currentItem.name = item;
-              alert(`現在調整: ${item}`);
-            });
-          });
-        };
-        
-        // 調整特定配件的位置
-        const adjustItemPosition = (itemName, x, y, z) => {
-          const entities = document.querySelectorAll("." + itemName + "-entity");
-          entities.forEach(entity => {
-            const pos = entity.getAttribute("position");
-            const newX = typeof pos.x === 'number' ? pos.x + x : parseFloat(pos.x) + x;
-            const newY = typeof pos.y === 'number' ? pos.y + y : parseFloat(pos.y) + y;
-            const newZ = typeof pos.z === 'number' ? pos.z + z : parseFloat(pos.z) + z;
-            entity.setAttribute("position", `${newX} ${newY} ${newZ}`);
-            console.log(`${itemName} 位置: ${newX}, ${newY}, ${newZ}`);
-          });
-        };
-        
-        // 調整特定配件的縮放
-        const adjustItemScale = (itemName, ratio) => {
-          const entities = document.querySelectorAll("." + itemName + "-entity");
-          entities.forEach(entity => {
-            const scale = entity.getAttribute("scale");
-            const baseScale = entity.dataset.baseScale ? JSON.parse(entity.dataset.baseScale) : scale;
-            
-            // 保存基礎縮放值
-            if (!entity.dataset.baseScale) {
-              entity.dataset.baseScale = JSON.stringify(scale);
-            }
-            
-            const newX = typeof baseScale.x === 'number' ? baseScale.x * ratio : parseFloat(baseScale.x) * ratio;
-            const newY = typeof baseScale.y === 'number' ? baseScale.y * ratio : parseFloat(baseScale.y) * ratio;
-            const newZ = typeof baseScale.z === 'number' ? baseScale.z * ratio : parseFloat(baseScale.z) * ratio;
-            entity.setAttribute("scale", `${newX} ${newY} ${newZ}`);
-            console.log(`${itemName} 縮放: ${newX}, ${newY}, ${newZ}`);
-          });
-        };
+          }, 1000); // 延遲1秒執行，確保模型已加載
+        }
         
         // 設置配件可見性
         const setVisible = (button, entities, visible) => {
@@ -322,10 +79,10 @@
           });
         });
         
-        // 添加設備信息顯示
+        // 添加簡單的設備信息顯示（可選）
         const deviceInfo = document.createElement("div");
         deviceInfo.style.position = "fixed";
-        deviceInfo.style.left = "10px";
+        deviceInfo.style.right = "10px";
         deviceInfo.style.top = "10px";
         deviceInfo.style.background = "rgba(0,0,0,0.5)";
         deviceInfo.style.color = "white";
@@ -334,110 +91,24 @@
         deviceInfo.style.zIndex = "1000";
         deviceInfo.innerHTML = `設備: ${isAndroid ? "Android" : "其他"}`;
         document.body.appendChild(deviceInfo);
-        
-        // 添加移動端控制面板
-        // 移動端控制面板模塊
-        const addMobileControls = () => {
-          const controlPanel = document.createElement('div');
-          controlPanel.className = 'mobile-control-panel';
-          controlPanel.innerHTML = `
-            <div class="slider-container">
-              <label>X軸位置</label>
-              <input type="range" id="x-position" min="-1" max="1" step="0.01" value="0">
-            </div>
-            <div class="slider-container">
-              <label>Y軸位置</label>
-              <input type="range" id="y-position" min="-1" max="1" step="0.01" value="0">
-            </div>
-            <div class="slider-container">
-              <label>Z軸位置</label>
-              <input type="range" id="z-position" min="-1" max="1" step="0.01" value="0">
-            </div>
-            <button class="save-position-btn">保存位置</button>
-          `;
-          document.body.appendChild(controlPanel);
-        
-          // 根據設備類型顯示控制面板
-          if (isAndroid || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            controlPanel.classList.add('show');
-            controlPanel.style.display = 'block';
-          }
-        
-          // 初始化控制元素
-          const xSlider = document.getElementById('x-position');
-          const ySlider = document.getElementById('y-position');
-          const zSlider = document.getElementById('z-position');
-          const saveBtn = document.querySelector('.save-position-btn');
-        
-          // 位置更新處理函數
-          const updatePosition = () => {
-            const currentItem = document.querySelector('.options-panel img.selected');
-            if (currentItem) {
-              const itemName = currentItem.id;
-              const entities = document.querySelectorAll('.' + itemName + '-entity');
-              entities.forEach(entity => {
-                const pos = entity.getAttribute('position');
-                entity.setAttribute('position', `${parseFloat(xSlider.value)} ${parseFloat(ySlider.value)} ${parseFloat(zSlider.value)}`);
-              });
-            } else {
-              alert('請先選擇一個配件');
-            }
-          };
-        
-          // 綁定滑塊事件
-          xSlider.addEventListener('input', updatePosition);
-          ySlider.addEventListener('input', updatePosition);
-          zSlider.addEventListener('input', updatePosition);
-        
-          // 保存位置數據
-          saveBtn.addEventListener('click', () => {
-            const currentPosition = {
-              x: parseFloat(xSlider.value),
-              y: parseFloat(ySlider.value),
-              z: parseFloat(zSlider.value)
-            };
-            console.log('保存的位置數據:', currentPosition);
-            alert('位置已保存！請複製控制台中的數據');
-          });
-        };
-        
-        // 初始化各個模塊
-        stabilizeFaceTracking();
-        
-        setTimeout(() => {
-          adjustAccessoriesPosition();
-          
-          addMobileControls();
-          
-          // 調試模式控制
-          if (window.location.search.includes('debug=true')) {
-            addAdjustmentControls();
-          }
-        }, 1000);
       })
     </script>
-    
-    <!-- 其餘樣式和HTML保持不變 -->
-    <!-- 基礎樣式設置 -->
     <style>
       body {
         margin: 0;
       }
-      /* AR容器樣式 */
       .example-container {
         overflow: hidden;
         position: absolute;
         width: 100%;
         height: 100%;
       }
-      /* 配件選擇面板樣式 */
       .options-panel {
         position: fixed;
         left: 0;
         top: 0;
         z-index: 2;
       }
-      /* 配件縮略圖樣式 */
       .options-panel img {
         border: solid 2px;
         width: 50px;
@@ -445,11 +116,9 @@
         object-fit: cover;
         cursor: pointer;
       }
-      /* 選中狀態樣式 */
       .options-panel img.selected {
         border-color: green;
       }
-      /* AR遊戲按鈕樣式 */
       .ar-game-btn {
         position: fixed;
         left: 10px;
@@ -460,68 +129,6 @@
         border-radius: 5px;
         cursor: pointer;
         z-index: 1000;
-      }
-      /* 移動端控制面板樣式 */
-      .mobile-control-panel {
-        position: fixed;
-        left: 50%;
-        bottom: 70px;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.85);
-        padding: 15px;
-        border-radius: 8px;
-        color: white;
-        z-index: 1000;
-        display: none;
-        width: 80%;
-        max-width: 300px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      }
-      /* 控制面板顯示狀態 */
-      .mobile-control-panel.show {
-        display: block;
-      }
-      /* 滑塊容器樣式 */
-      .slider-container {
-        margin: 5px 0;
-      }
-      /* 滑塊標籤樣式 */
-      .slider-container label {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 14px;
-        font-weight: bold;
-        color: #4CAF50;
-      }
-      /* 滑塊輸入框樣式 */
-      .slider-container input[type="range"] {
-        width: 100%;
-        margin: 8px 0;
-        height: 20px;
-        -webkit-appearance: none;
-        background: rgba(255,255,255,0.2);
-        border-radius: 10px;
-        outline: none;
-      }
-      /* 滑塊拖動按鈕樣式 */
-      .slider-container input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 25px;
-        height: 25px;
-        background: #4CAF50;
-        border-radius: 50%;
-        cursor: pointer;
-      }
-      /* 保存按鈕樣式 */
-      .save-position-btn {
-        background: #4CAF50;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 3px;
-        cursor: pointer;
-        margin-top: 5px;
-        width: 100%;
       }
     </style>
   </head>
