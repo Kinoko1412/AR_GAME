@@ -15,53 +15,98 @@
         // 添加位置穩定性控制
         const stabilizeFaceTracking = () => {
           const sceneEl = document.querySelector('a-scene');
+          let headPosition = null;
+          let isInitialized = false;
           
           // 當人臉被追蹤到時調整位置
           sceneEl.addEventListener('targetFound', function() {
             console.log("Face target found");
-            adjustAccessoriesPosition();
+            // 獲取頭部定位點
+            const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
+            if (headAnchor) {
+              headPosition = headAnchor.object3D.position;
+              console.log("Head position:", headPosition);
+              if (!isInitialized) {
+                // 首次偵測到頭部時進行初始化調整
+                adjustAccessoriesPosition(headPosition);
+                isInitialized = true;
+              }
+            }
           });
           
           // 當人臉追蹤更新時微調位置
           sceneEl.addEventListener('targetUpdate', function() {
             // 使用節流函數減少更新頻率，提高穩定性
-            if (!window.throttlePause) {
+            if (!window.throttlePause && headPosition) {
               window.throttlePause = true;
               setTimeout(() => {
                 window.throttlePause = false;
-                adjustAccessoriesPosition();
+                const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
+                if (headAnchor) {
+                  headPosition = headAnchor.object3D.position;
+                  adjustAccessoriesPosition(headPosition);
+                }
               }, 200); // 每200毫秒更新一次位置
             }
+          });
+          
+          // 當人臉追蹤丟失時重置狀態
+          sceneEl.addEventListener('targetLost', function() {
+            console.log("Face target lost");
+            headPosition = null;
+            isInitialized = false;
           });
         };
         
         // 調整配件位置的函數
-        const adjustAccessoriesPosition = () => {
+        const adjustAccessoriesPosition = (headPosition) => {
           if (isAndroid) {
+            const headOffset = headPosition ? headPosition : { x: 0, y: 0, z: 0 };
+            
             // 帽子位置調整
             const hat1 = document.querySelector(".hat1-entity");
             if (hat1) {
-              hat1.setAttribute("position", "0 0.65 -0.45");
+              const hat1Pos = {
+                x: headOffset.x,
+                y: headOffset.y + 0.65,
+                z: headOffset.z - 0.45
+              };
+              hat1.setAttribute("position", `${hat1Pos.x} ${hat1Pos.y} ${hat1Pos.z}`);
               hat1.setAttribute("scale", "0.28 0.28 0.28");
               hat1.setAttribute("rotation", "0 0 0");
             }
             
             const hat2 = document.querySelector(".hat2-entity");
             if (hat2) {
-              hat2.setAttribute("position", "0 -0.05 -0.45");
+              const hat2Pos = {
+                x: headOffset.x,
+                y: headOffset.y - 0.05,
+                z: headOffset.z - 0.45
+              };
+              hat2.setAttribute("position", `${hat2Pos.x} ${hat2Pos.y} ${hat2Pos.z}`);
               hat2.setAttribute("scale", "0.0065 0.0065 0.0065");
             }
             
             // 眼鏡位置調整
             const glasses1 = document.querySelector(".glasses1-entity");
             if (glasses1) {
-              glasses1.setAttribute("position", "0 -0.03 -0.02");
+              const glasses1Pos = {
+                x: headOffset.x,
+                y: headOffset.y - 0.03,
+                z: headOffset.z - 0.02
+              };
+              glasses1.setAttribute("position", `${glasses1Pos.x} ${glasses1Pos.y} ${glasses1Pos.z}`);
               glasses1.setAttribute("scale", "0.008 0.008 0.008");
             }
             
             const glasses2 = document.querySelector(".glasses2-entity");
             if (glasses2) {
-              glasses2.setAttribute("position", "0 -0.22 -0.05");
+              const glasses2Pos = {
+                x: headOffset.x,
+                y: headOffset.y - 0.22,
+                z: headOffset.z - 0.05
+              };
+              glasses2.setAttribute("position", `${glasses2Pos.x} ${glasses2Pos.y} ${glasses2Pos.z}`);
               glasses2.setAttribute("scale", "0.5 0.5 0.5");
             }
             
@@ -69,11 +114,12 @@
             const earrings = document.querySelectorAll(".earring-entity");
             earrings.forEach((earring, index) => {
               // 左右耳環分別調整
-              if (index === 0) { // 左耳
-                earring.setAttribute("position", "0 -0.28 -0.28");
-              } else { // 右耳
-                earring.setAttribute("position", "0 -0.28 -0.28");
-              }
+              const earringPos = {
+                x: headOffset.x + (index === 0 ? -0.1 : 0.1), // 左右耳位置偏移
+                y: headOffset.y - 0.28,
+                z: headOffset.z - 0.28
+              };
+              earring.setAttribute("position", `${earringPos.x} ${earringPos.y} ${earringPos.z}`);
               earring.setAttribute("scale", "0.045 0.045 0.045");
             });
           }
