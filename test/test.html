@@ -335,12 +335,74 @@
         deviceInfo.innerHTML = `設備: ${isAndroid ? "Android" : "其他"}`;
         document.body.appendChild(deviceInfo);
         
+        // 添加移動端控制面板
+        const addMobileControls = () => {
+          const controlPanel = document.createElement('div');
+          controlPanel.className = 'mobile-control-panel';
+          controlPanel.innerHTML = `
+            <div class="slider-container">
+              <label>X軸位置</label>
+              <input type="range" id="x-position" min="-1" max="1" step="0.01" value="0">
+            </div>
+            <div class="slider-container">
+              <label>Y軸位置</label>
+              <input type="range" id="y-position" min="-1" max="1" step="0.01" value="0">
+            </div>
+            <div class="slider-container">
+              <label>Z軸位置</label>
+              <input type="range" id="z-position" min="-1" max="1" step="0.01" value="0">
+            </div>
+            <button class="save-position-btn">保存位置</button>
+          `;
+          document.body.appendChild(controlPanel);
+
+          // 如果是移動設備，顯示控制面板
+          if (isAndroid || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            controlPanel.classList.add('show');
+          }
+
+          // 添加滑桿事件監聽
+          const xSlider = document.getElementById('x-position');
+          const ySlider = document.getElementById('y-position');
+          const zSlider = document.getElementById('z-position');
+          const saveBtn = document.querySelector('.save-position-btn');
+
+          const updatePosition = () => {
+            const currentItem = document.querySelector('.options-panel img.selected');
+            if (currentItem) {
+              const itemName = currentItem.id;
+              const entities = document.querySelectorAll('.' + itemName + '-entity');
+              entities.forEach(entity => {
+                const pos = entity.getAttribute('position');
+                entity.setAttribute('position', `${parseFloat(xSlider.value)} ${parseFloat(ySlider.value)} ${parseFloat(zSlider.value)}`);
+              });
+            } else {
+              alert('請先選擇一個配件');
+            }
+          };
+
+          xSlider.addEventListener('input', updatePosition);
+          ySlider.addEventListener('input', updatePosition);
+          zSlider.addEventListener('input', updatePosition);
+
+          saveBtn.addEventListener('click', () => {
+            const currentPosition = {
+              x: parseFloat(xSlider.value),
+              y: parseFloat(ySlider.value),
+              z: parseFloat(zSlider.value)
+            };
+            console.log('保存的位置數據:', currentPosition);
+            alert('位置已保存！請複製控制台中的數據');
+          });
+        };
+
         // 初始化穩定性控制
         stabilizeFaceTracking();
         
         // 在頁面加載後延遲調整位置
         setTimeout(() => {
           adjustAccessoriesPosition();
+          addMobileControls();
           
           // 只在調試模式下添加微調控制
           if (window.location.search.includes('debug=true')) {
@@ -387,6 +449,42 @@
         border-radius: 5px;
         cursor: pointer;
         z-index: 1000;
+      }
+      .mobile-control-panel {
+        position: fixed;
+        left: 10px;
+        bottom: 60px;
+        background: rgba(0,0,0,0.7);
+        padding: 10px;
+        border-radius: 5px;
+        color: white;
+        z-index: 1000;
+        display: none;
+      }
+      .mobile-control-panel.show {
+        display: block;
+      }
+      .slider-container {
+        margin: 5px 0;
+      }
+      .slider-container label {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+      .slider-container input[type="range"] {
+        width: 150px;
+        margin: 5px 0;
+      }
+      .save-position-btn {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-top: 5px;
+        width: 100%;
       }
     </style>
   </head>
