@@ -10,6 +10,7 @@
 	const visibles = [true, false, false, true, true];
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 	const yOffset = isMobile ? -1 : 0;
+	const zOffset = isMobile ? -0.3 : 0;
 
 	const setVisible = (button, entities, visible) => {
 	  if (visible) {
@@ -21,7 +22,7 @@
 	    entity.setAttribute("visible", visible);
 	    const currentPosition = entity.getAttribute("position");
 	    if (currentPosition) {
-	      entity.setAttribute("position", `${currentPosition.x} ${currentPosition.y + yOffset} ${currentPosition.z}`);
+	      entity.setAttribute("position", `${currentPosition.x} ${currentPosition.y + yOffset} ${currentPosition.z + zOffset}`);
 	    }
 	  });
 	}
