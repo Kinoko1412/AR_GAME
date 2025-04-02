@@ -1,4 +1,5 @@
 
+<!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,20 +10,20 @@
         const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
         const visibles = [true, false, false, true, true];
         
-        // 檢測是否為安卓設備
+        // 檢測設備類型
         const isAndroid = /Android/i.test(navigator.userAgent);
         
-        // 添加位置穩定性控制
+        // 臉部追蹤穩定性控制模塊
         const stabilizeFaceTracking = () => {
           const sceneEl = document.querySelector('a-scene');
           let headPosition = null;
           let lastPosition = null;
           let positionBuffer = [];
           let isInitialized = false;
-          const bufferSize = 8; // 位置緩衝區大小
-          const smoothingFactor = 0.15; // 平滑過渡係數
+          const bufferSize = 8; // 位置緩衝區大小，用於平滑處理
+          const smoothingFactor = 0.15; // 平滑過渡係數，控制移動速度
           
-          // 計算平均位置
+          // 計算多個位置的平均值，用於穩定追蹤
           const calculateAveragePosition = (positions) => {
             if (positions.length === 0) return null;
             const sum = positions.reduce((acc, pos) => ({
@@ -37,7 +38,7 @@
             };
           };
 
-          // 平滑過渡到新位置
+          // 實現平滑過渡效果
           const smoothPosition = (current, target) => {
             if (!current) return target;
             return {
@@ -47,7 +48,7 @@
             };
           };
           
-          // 當人臉被追蹤到時調整位置
+          // 人臉檢測事件處理
           sceneEl.addEventListener('targetFound', function() {
             console.log("Face target found");
             const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
@@ -64,7 +65,7 @@
             }
           });
           
-          // 當人臉追蹤更新時微調位置
+          // 人臉追蹤更新處理
           sceneEl.addEventListener('targetUpdate', function() {
             if (!window.throttlePause && headPosition) {
               window.throttlePause = true;
@@ -74,22 +75,21 @@
                 if (headAnchor) {
                   const newPosition = headAnchor.object3D.position;
                   
-                  // 檢查位置變化是否過大
+                  // 檢查位置變化幅度
                   const positionChange = {
                     x: Math.abs(newPosition.x - lastPosition.x),
                     y: Math.abs(newPosition.y - lastPosition.y),
                     z: Math.abs(newPosition.z - lastPosition.z)
                   };
                   
-                  // 如果位置變化在合理範圍內才更新
+                  // 位置變化在閾值內才更新
                   if (positionChange.x < 0.3 && positionChange.y < 0.3 && positionChange.z < 0.3) {
-                    // 更新位置緩衝區
                     positionBuffer.push({ ...newPosition });
                     if (positionBuffer.length > bufferSize) {
                       positionBuffer.shift();
                     }
                     
-                    // 計算平均位置並應用平滑過渡
+                    // 應用平滑過渡
                     const avgPosition = calculateAveragePosition(positionBuffer);
                     if (avgPosition) {
                       headPosition = smoothPosition(lastPosition, avgPosition);
@@ -98,11 +98,11 @@
                     }
                   }
                 }
-              }, 100); // 提高更新頻率到100毫秒
+              }, 100);
             }
           });
           
-          // 當人臉追蹤丟失時重置狀態
+          // 人臉追蹤丟失處理
           sceneEl.addEventListener('targetLost', function() {
             console.log("Face target lost");
             headPosition = null;
@@ -112,12 +112,12 @@
           });
         };
         
-        // 調整配件位置的函數
+        // 配件位置調整模塊
         const adjustAccessoriesPosition = (headPosition) => {
           if (isAndroid) {
             const headOffset = headPosition ? headPosition : { x: 0, y: 0, z: 0 };
             
-            // 帽子位置調整
+            // 調整帽子位置
             const hat1 = document.querySelector(".hat1-entity");
             if (hat1) {
               const hat1Pos = {
@@ -179,7 +179,7 @@
           }
         };
         
-        // 添加手動微調控制面板（調試用）
+        // 調試用控制面板
         const addAdjustmentControls = () => {
           const controlPanel = document.createElement("div");
           controlPanel.style.position = "fixed";
@@ -336,6 +336,7 @@
         document.body.appendChild(deviceInfo);
         
         // 添加移動端控制面板
+        // 移動端控制面板模塊
         const addMobileControls = () => {
           const controlPanel = document.createElement('div');
           controlPanel.className = 'mobile-control-panel';
@@ -355,20 +356,20 @@
             <button class="save-position-btn">保存位置</button>
           `;
           document.body.appendChild(controlPanel);
-
-          // 如果是移動設備，顯示控制面板
+        
+          // 根據設備類型顯示控制面板
           if (isAndroid || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
             controlPanel.classList.add('show');
-            // 確保控制面板在移動設備上立即顯示
             controlPanel.style.display = 'block';
           }
-
-          // 添加滑桿事件監聽
+        
+          // 初始化控制元素
           const xSlider = document.getElementById('x-position');
           const ySlider = document.getElementById('y-position');
           const zSlider = document.getElementById('z-position');
           const saveBtn = document.querySelector('.save-position-btn');
-
+        
+          // 位置更新處理函數
           const updatePosition = () => {
             const currentItem = document.querySelector('.options-panel img.selected');
             if (currentItem) {
@@ -382,11 +383,13 @@
               alert('請先選擇一個配件');
             }
           };
-
+        
+          // 綁定滑塊事件
           xSlider.addEventListener('input', updatePosition);
           ySlider.addEventListener('input', updatePosition);
           zSlider.addEventListener('input', updatePosition);
-
+        
+          // 保存位置數據
           saveBtn.addEventListener('click', () => {
             const currentPosition = {
               x: parseFloat(xSlider.value),
@@ -397,16 +400,16 @@
             alert('位置已保存！請複製控制台中的數據');
           });
         };
-
-        // 初始化穩定性控制
+        
+        // 初始化各個模塊
         stabilizeFaceTracking();
         
-        // 在頁面加載後延遲調整位置
         setTimeout(() => {
           adjustAccessoriesPosition();
+          
           addMobileControls();
           
-          // 只在調試模式下添加微調控制
+          // 調試模式控制
           if (window.location.search.includes('debug=true')) {
             addAdjustmentControls();
           }
@@ -415,22 +418,26 @@
     </script>
     
     <!-- 其餘樣式和HTML保持不變 -->
+    <!-- 基礎樣式設置 -->
     <style>
       body {
         margin: 0;
       }
+      /* AR容器樣式 */
       .example-container {
         overflow: hidden;
         position: absolute;
         width: 100%;
         height: 100%;
       }
+      /* 配件選擇面板樣式 */
       .options-panel {
         position: fixed;
         left: 0;
         top: 0;
         z-index: 2;
       }
+      /* 配件縮略圖樣式 */
       .options-panel img {
         border: solid 2px;
         width: 50px;
@@ -438,9 +445,11 @@
         object-fit: cover;
         cursor: pointer;
       }
+      /* 選中狀態樣式 */
       .options-panel img.selected {
         border-color: green;
       }
+      /* AR遊戲按鈕樣式 */
       .ar-game-btn {
         position: fixed;
         left: 10px;
@@ -452,6 +461,7 @@
         cursor: pointer;
         z-index: 1000;
       }
+      /* 移動端控制面板樣式 */
       .mobile-control-panel {
         position: fixed;
         left: 50%;
@@ -467,12 +477,15 @@
         max-width: 300px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.3);
       }
+      /* 控制面板顯示狀態 */
       .mobile-control-panel.show {
         display: block;
       }
+      /* 滑塊容器樣式 */
       .slider-container {
         margin: 5px 0;
       }
+      /* 滑塊標籤樣式 */
       .slider-container label {
         display: block;
         margin-bottom: 5px;
@@ -480,6 +493,7 @@
         font-weight: bold;
         color: #4CAF50;
       }
+      /* 滑塊輸入框樣式 */
       .slider-container input[type="range"] {
         width: 100%;
         margin: 8px 0;
@@ -489,6 +503,7 @@
         border-radius: 10px;
         outline: none;
       }
+      /* 滑塊拖動按鈕樣式 */
       .slider-container input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
         width: 25px;
@@ -497,6 +512,7 @@
         border-radius: 50%;
         cursor: pointer;
       }
+      /* 保存按鈕樣式 */
       .save-position-btn {
         background: #4CAF50;
         color: white;
