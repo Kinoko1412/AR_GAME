@@ -19,8 +19,8 @@
           let lastPosition = null;
           let positionBuffer = [];
           let isInitialized = false;
-          const bufferSize = 5; // 位置緩衝區大小
-          const smoothingFactor = 0.3; // 平滑過渡係數
+          const bufferSize = 8; // 位置緩衝區大小
+          const smoothingFactor = 0.15; // 平滑過渡係數
           
           // 計算平均位置
           const calculateAveragePosition = (positions) => {
@@ -82,7 +82,7 @@
                   };
                   
                   // 如果位置變化在合理範圍內才更新
-                  if (positionChange.x < 0.5 && positionChange.y < 0.5 && positionChange.z < 0.5) {
+                  if (positionChange.x < 0.3 && positionChange.y < 0.3 && positionChange.z < 0.3) {
                     // 更新位置緩衝區
                     positionBuffer.push({ ...newPosition });
                     if (positionBuffer.length > bufferSize) {
