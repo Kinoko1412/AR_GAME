@@ -359,6 +359,8 @@
           // 如果是移動設備，顯示控制面板
           if (isAndroid || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
             controlPanel.classList.add('show');
+            // 確保控制面板在移動設備上立即顯示
+            controlPanel.style.display = 'block';
           }
 
           // 添加滑桿事件監聽
@@ -452,14 +454,18 @@
       }
       .mobile-control-panel {
         position: fixed;
-        left: 10px;
-        bottom: 60px;
-        background: rgba(0,0,0,0.7);
-        padding: 10px;
-        border-radius: 5px;
+        left: 50%;
+        bottom: 70px;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.85);
+        padding: 15px;
+        border-radius: 8px;
         color: white;
         z-index: 1000;
         display: none;
+        width: 80%;
+        max-width: 300px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
       }
       .mobile-control-panel.show {
         display: block;
@@ -469,12 +475,27 @@
       }
       .slider-container label {
         display: block;
-        margin-bottom: 2px;
-        font-size: 12px;
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #4CAF50;
       }
       .slider-container input[type="range"] {
-        width: 150px;
-        margin: 5px 0;
+        width: 100%;
+        margin: 8px 0;
+        height: 20px;
+        -webkit-appearance: none;
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+        outline: none;
+      }
+      .slider-container input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #4CAF50;
+        border-radius: 50%;
+        cursor: pointer;
       }
       .save-position-btn {
         background: #4CAF50;
