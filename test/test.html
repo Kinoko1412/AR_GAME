@@ -16,18 +16,48 @@
         const stabilizeFaceTracking = () => {
           const sceneEl = document.querySelector('a-scene');
           let headPosition = null;
+          let lastPosition = null;
+          let positionBuffer = [];
           let isInitialized = false;
+          const bufferSize = 5; // 位置緩衝區大小
+          const smoothingFactor = 0.3; // 平滑過渡係數
+          
+          // 計算平均位置
+          const calculateAveragePosition = (positions) => {
+            if (positions.length === 0) return null;
+            const sum = positions.reduce((acc, pos) => ({
+              x: acc.x + pos.x,
+              y: acc.y + pos.y,
+              z: acc.z + pos.z
+            }), { x: 0, y: 0, z: 0 });
+            return {
+              x: sum.x / positions.length,
+              y: sum.y / positions.length,
+              z: sum.z / positions.length
+            };
+          };
+
+          // 平滑過渡到新位置
+          const smoothPosition = (current, target) => {
+            if (!current) return target;
+            return {
+              x: current.x + (target.x - current.x) * smoothingFactor,
+              y: current.y + (target.y - current.y) * smoothingFactor,
+              z: current.z + (target.z - current.z) * smoothingFactor
+            };
+          };
           
           // 當人臉被追蹤到時調整位置
           sceneEl.addEventListener('targetFound', function() {
             console.log("Face target found");
-            // 獲取頭部定位點
             const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
             if (headAnchor) {
-              headPosition = headAnchor.object3D.position;
-              console.log("Head position:", headPosition);
+              const newPosition = headAnchor.object3D.position;
+              headPosition = { ...newPosition };
+              lastPosition = { ...newPosition };
+              positionBuffer = [{ ...newPosition }];
+              console.log("Initial head position:", headPosition);
               if (!isInitialized) {
-                // 首次偵測到頭部時進行初始化調整
                 adjustAccessoriesPosition(headPosition);
                 isInitialized = true;
               }
@@ -36,17 +66,39 @@
           
           // 當人臉追蹤更新時微調位置
           sceneEl.addEventListener('targetUpdate', function() {
-            // 使用節流函數減少更新頻率，提高穩定性
             if (!window.throttlePause && headPosition) {
               window.throttlePause = true;
               setTimeout(() => {
                 window.throttlePause = false;
                 const headAnchor = document.querySelector('[mindar-face-target="anchorIndex: 168"]');
                 if (headAnchor) {
-                  headPosition = headAnchor.object3D.position;
-                  adjustAccessoriesPosition(headPosition);
+                  const newPosition = headAnchor.object3D.position;
+                  
+                  // 檢查位置變化是否過大
+                  const positionChange = {
+                    x: Math.abs(newPosition.x - lastPosition.x),
+                    y: Math.abs(newPosition.y - lastPosition.y),
+                    z: Math.abs(newPosition.z - lastPosition.z)
+                  };
+                  
+                  // 如果位置變化在合理範圍內才更新
+                  if (positionChange.x < 0.5 && positionChange.y < 0.5 && positionChange.z < 0.5) {
+                    // 更新位置緩衝區
+                    positionBuffer.push({ ...newPosition });
+                    if (positionBuffer.length > bufferSize) {
+                      positionBuffer.shift();
+                    }
+                    
+                    // 計算平均位置並應用平滑過渡
+                    const avgPosition = calculateAveragePosition(positionBuffer);
+                    if (avgPosition) {
+                      headPosition = smoothPosition(lastPosition, avgPosition);
+                      lastPosition = { ...headPosition };
+                      adjustAccessoriesPosition(headPosition);
+                    }
+                  }
                 }
-              }, 200); // 每200毫秒更新一次位置
+              }, 100); // 提高更新頻率到100毫秒
             }
           });
           
@@ -54,6 +106,8 @@
           sceneEl.addEventListener('targetLost', function() {
             console.log("Face target lost");
             headPosition = null;
+            lastPosition = null;
+            positionBuffer = [];
             isInitialized = false;
           });
         };
