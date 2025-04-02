@@ -8,6 +8,9 @@
       document.addEventListener("DOMContentLoaded", function() {
 	const list = ["glasses1", "glasses2", "hat1", "hat2", "earring"];
 	const visibles = [true, false, false, true, true];
+	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	const yOffset = isMobile ? -1 : 0;
+
 	const setVisible = (button, entities, visible) => {
 	  if (visible) {
 	    button.classList.add("selected");
@@ -16,8 +19,13 @@
 	  }
 	  entities.forEach((entity) => {
 	    entity.setAttribute("visible", visible);
+	    const currentPosition = entity.getAttribute("position");
+	    if (currentPosition) {
+	      entity.setAttribute("position", `${currentPosition.x} ${currentPosition.y + yOffset} ${currentPosition.z}`);
+	    }
 	  });
 	}
+
 	list.forEach((item, index) => {
 	  const button = document.querySelector("#" + item);
 	  const entities = document.querySelectorAll("." + item + "-entity");
