@@ -1,4 +1,5 @@
-# 這是一個為了準備課程博覽會拼命製作香菇的故事
+# 恩亨恩亨~
+
 link: [kinoko1412.github.io/AR_GAME](https://kinoko1412.github.io/AR_GAME/)https://kinoko1412.github.io/AR_GAME/
 故事第一章
 https://kinoko1412.github.io/AR_GAME/index_story
