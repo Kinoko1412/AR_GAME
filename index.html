@@ -41,7 +41,7 @@
 </head>
 <body>
     <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
-    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: mind/combined0601.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <!-- 定義場景中使用的資產 -->
         <a-assets>
             <img id="projection" src="images/Projection1.png" />
@@ -53,6 +53,7 @@
             <a-asset-item id="CharmanderModel" src="model/charmander.gltf"></a-asset-item>
             <a-asset-item id="rimuru_slimeModel" src="model/rimuru_slime.gltf"></a-asset-item>
             <video id="lucadance" src="video/lucadance.mp4" autoplay loop muted playsinline></video>
+            <video id="rick" src="video/Rick.mp4" autoplay loop muted playsinline></video>
         </a-assets>
 
         <!-- 設定相機 -->
@@ -85,6 +86,9 @@
         </a-entity>
         <a-entity mindar-image-target="targetIndex: 8">
             <a-gltf-model src="#rimuru_slimeModel" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 9">
+            <a-gltf-model src="#rick" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
         </a-entity>
     </a-scene>
 
