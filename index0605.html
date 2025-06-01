@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AR Game with MindAR</title>
+    <!-- 引入 A-Frame 和 MindAR 的 JavaScript 函式庫 -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+        function playVideo() {
+            var videoElement = document.querySelector('#lucadance');
+            videoElement.play();
+        }
+    </script>
+    <style>
+        .funny-face-btn {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .play-video-btn {
+            position: fixed;
+            left: 50%;
+            bottom: 10px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            transform: translateX(-50%); /* 將播放按鈕置中 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 定義 A-Frame 場景並設定 MindAR 的圖像目標來源 -->
+    <a-scene mindar-image="imageTargetSrc: mind/combined.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        <!-- 定義場景中使用的資產 -->
+        <a-assets>
+            <img id="projection" src="images/Projection1.png" />
+
+            <video id="rick" src="video/Rick.mp4" autoplay loop muted playsinline></video>
+        </a-assets>
+
+        <!-- 設定相機 -->
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!-- 定義圖像目標並添加 3D 物體和圖像 -->
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-gltf-model src="#kinokoModel" position="0 0 0" scale="0.01 0.01 0.01" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 1">
+            <a-image src="#projection" position="0 1.2 0"></a-image> <!-- 投影圖片 -->
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 2">
+            <a-gltf-model src="#LucaModel" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 3">
+            <a-gltf-model src="#PetraModel" position="0 0 0" scale="0.1 0.1 0.1" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 4">
+            <a-gltf-model src="#AugustusModel" position="0 0 0" scale="0.8 0.8 0.8" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 5">
+            <a-gltf-model src="#VentiModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 6">
+            <a-video src="#lucadance" width="1" height="2.5" position="0 0 0" rotation="0 0 0"></a-video>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 7">
+            <a-gltf-model src="#CharmanderModel" position="0 0 0" scale="0.8 0.8 0.8" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 8">
+            <a-gltf-model src="#rimuru_slimeModel" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
+        </a-entity>
+    </a-scene>
+
+    <!-- 添加 "funny face" 按鈕 -->
+    <button class="funny-face-btn" onclick="window.location.href='https://kinoko1412.github.io/AR_GAME/test/test.html'">Funny Face</button>
+    <button class="play-video-btn" onclick="playVideo()">Play Video</button>
+</body>
+</html>
